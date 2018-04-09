@@ -161,7 +161,7 @@ export class MyApp {
       }
     });
 
-    pushObject.on('error').subscribe(error => console.log(error)); //this.notification(error)
+    pushObject.on('error').subscribe(error => console.log(error));
   }
 
   showNotification(message) {
