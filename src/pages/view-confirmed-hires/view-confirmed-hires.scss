@@ -1,0 +1,71 @@
+page-view-confirmed-hires {
+    .page-title {
+        color: blue;
+        text-align: center;
+        font-size: 2.5rem!important;
+        background-color: #FCBB83;
+        height: 3.6rem;
+        padding-top: 2px;
+        margin-right: 0;
+    }
+    .hire-section {
+        margin-bottom: 13px;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: white;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border: 1px solid green;
+    }
+    .hire-label {
+        display: table-cell;
+    }
+    .warning {
+        font-size: 2rem;
+    }
+    span {
+        margin-left: auto;
+    }
+    ion-icon {
+        margin-left: auto;
+    }
+    .btn {
+        background-color: #FCBB83;
+        border-radius: 10px;
+        font-size: 2.0rem!important;
+    }
+    .back {
+        color: white;
+        background-color: green;
+        margin: 0;
+    }
+    ion-label {
+        overflow: visible;
+        white-space: normal;
+    }
+    .number {
+        border: 1px solid !important;
+        border-radius: 5px;
+        padding: 0 3px;
+        color: red;
+        margin: auto;
+    }
+    .back-icon {
+        margin: auto;
+    }
+    .date-time {
+        margin-top: -20px;
+        margin-bottom: -20px;
+    }
+    #destination {
+        margin: auto;
+        font-weight: bold;
+    }
+    .display-flex {
+        display: flex;
+    }
+    #more {
+        background: url('https://greenic.000webhostapp.com/images/arrow.png') no-repeat;
+        background-size: contain;
+        background-position: right;
+    }
+}

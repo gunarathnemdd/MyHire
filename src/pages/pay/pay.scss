@@ -1,0 +1,42 @@
+page-pay {
+  ion-label {
+    overflow: visible;
+    white-space: normal;
+  }
+  .title {
+    color: red;
+    font-size: 1.8rem;
+  }
+  .title2 {
+    color: blue;
+    font-size: 1.8rem;
+  }
+  .btn {
+    background-color: #FCBB83;
+    color: #0B00FF;
+    border-radius: 10px;
+    font-size: 2.0rem!important;
+  }
+  .pinTitle{
+    font-size: 1.8rem!important;
+    color: #0B00FF;
+    font-weight: bold;
+  }
+  .pin {
+    border: 1px solid #FCBB83;
+    border-radius: 5px;
+    background-color: #ffffff;
+  }
+  #hidden {
+    margin-top: 20px;
+  }
+  span {
+    margin-left: auto;
+  }
+  ion-icon {
+    margin-left: auto;
+  }
+  .back-icon {
+    margin: auto;
+  }
+}

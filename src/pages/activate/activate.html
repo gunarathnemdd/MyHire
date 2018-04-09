@@ -1,0 +1,72 @@
+<ion-header>
+	<ion-navbar color=navBarColor>
+		<ion-title>
+			<ion-row>
+				<ion-col col-6>
+					<ion-label>MyHire</ion-label>
+				</ion-col>
+				<ion-col col-6>
+					<img [src]="image" float-right/>
+				</ion-col>
+			</ion-row>
+		</ion-title>
+	</ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+	<ion-grid class="button-grid">
+		<ion-row class="btnRow">
+			<ion-col col-4 col-sm-2 col-md-2 push-8 push-sm-10 push-md-10 class="activeState">
+				<ion-label>{{isActive}}</ion-label>
+				<ion-icon [name]="stateIcon" class="stateIcon"></ion-icon>
+			</ion-col>
+		</ion-row>
+		<ion-row class="btnRow">
+			<button (click)="activeStateChange()" ion-button class="activate btn" block>
+				<span>{{activeState}}</span>
+				<ion-icon [name]="actionIcon" float-right></ion-icon>
+			</button>
+		</ion-row>
+		<!-- <ion-row class="btnRow">
+			<button (click)="active()" ion-button class="activate btn" [disabled]="!isenabledActiveBtn" block>
+				<span>ACTIVATE</span>
+				<ion-icon name="eye" float-right></ion-icon>
+			</button>
+		</ion-row>
+		<ion-row class="btnRow">
+			<button (click)="deactive()" ion-button class="deactivate btn" [disabled]="!isenabledDeactiveBtn" block>
+				<span>DEACTIVATE</span>
+				<ion-icon name="eye-off"></ion-icon>
+			</button>
+		</ion-row> -->
+		<ion-row class="btnRow">
+			<button (click)="newHire()" ion-button class="newHire btn" block>
+				<span>VIEW NEW HIRE</span>
+				<ion-icon name="ios-car">
+					<ion-badge id="notifications-badge" color="danger">{{noOfNewHires}}</ion-badge> <!-- [disabled]="!isenabledViewHireBtn" -->
+				</ion-icon>
+			</button>
+		</ion-row>
+		<ion-row class="btnRow">
+			<button (click)="confirmedHire()" ion-button class="newHire btn" block>
+				<span>VIEW MY HIRES</span>
+				<ion-icon name="ios-checkmark-circle-outline">
+					<ion-badge id="notifications-badge" color="danger">{{noOfConfirmedHires}}</ion-badge>
+				</ion-icon>
+			</button>
+		</ion-row>
+		<ion-row class="btnRow">
+			<button (click)="pay()" ion-button class="pay btn" block>
+				<span>PAY</span>
+				<ion-icon name="ios-cash-outline"></ion-icon>
+			</button>
+		</ion-row>
+	</ion-grid>
+</ion-content>
+
+<ion-footer>
+	<ion-toolbar color=navBarColor>
+		<ion-title>Copyright &copy; 2018 Civiten</ion-title>
+	</ion-toolbar>
+</ion-footer>

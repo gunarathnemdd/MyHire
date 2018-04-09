@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-navbar color=navBarColor>
+    <ion-title>
+      <ion-row>
+        <ion-col col-9>
+          <ion-label>MyHire</ion-label>
+        </ion-col>
+        <ion-col col-3>
+          <img [src]="image" float-right/>
+        </ion-col>   
+      </ion-row>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <form class="form" [formGroup]="login" (ngSubmit)="logForm()">
+    <ion-row text-wrap>
+      <ion-label class="page-title">Please enter your given driver ID to continue</ion-label>
+    </ion-row>
+    <ion-row>
+      <ion-col col-sm-3 col-4 class="same-space">
+        <ion-label class="driverIdTitle" fixed>Driver ID</ion-label>
+      </ion-col>
+      <ion-col col-sm-9 col-8 class="same-space">
+        <ion-input type="text" class="driverId" formControlName="driverId" ></ion-input>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <button ion-button type="submit" class="d_button" block><span>Go</span><ion-icon name="log-in"></ion-icon></button>
+    </ion-row>
+    <ion-row>
+      <ion-label class="forget" (click)="forgetId()">Forget Driver ID ?</ion-label>
+    </ion-row>
+  </form>
+</ion-content>
+
+<ion-footer>
+    <ion-toolbar color=navBarColor>
+      <ion-title>Copyright &copy; 2018 Civiten</ion-title>
+    </ion-toolbar>
+  </ion-footer>

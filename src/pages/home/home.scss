@@ -1,0 +1,63 @@
+page-home {
+    ion-header ion-navbar ion-title ion-row ion-col ion-label {
+      font-style: italic!important;
+      font-size: 25px;
+      background: -webkit-linear-gradient(rgb(245, 223, 24), rgb(230, 20, 20));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .page-title {
+      color: #85c500; // yellowgreen
+      text-align: center;
+      font-size: 2.0rem!important;
+    }
+    .driverIdTitle{
+      font-size: 1.8rem!important;
+      color: #0B00FF;
+      font-weight: bold;
+    }
+    .d_button {
+      background-color: #FCBB83;
+      color: #0B00FF;
+      border-radius: 10px;
+      height: 43px;
+      font-size: 2.0rem!important;
+      margin: 13px 0;
+    }
+    .d_button:hover {
+      color: #ffffff;
+    }
+    .driverId {
+      border: 1px solid #FCBB83;
+      border-radius: 5px;
+      background-color: #ffffff;
+    }
+    .form {
+        height: max-content;
+        position: absolute;
+        top:0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .forget {
+      color: #488aff;
+      text-align: center;
+      font-size: 15px;
+    }
+    span {
+      margin-left: auto;
+    }
+    ion-icon {
+      margin-left: auto;
+    }
+    .same-space {
+      margin: 13px 0;
+      padding: 0;
+    }
+  }
+  

@@ -1,0 +1,61 @@
+page-activate {
+  ion-header ion-navbar ion-title ion-row ion-col ion-label {
+    font-style: italic!important;
+    font-size: 23px;
+    background: -webkit-linear-gradient(white, yellow);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .button-grid {
+    height: max-content;
+  	position: absolute;
+  	top:0;
+  	bottom: 0;
+  	left: 0;
+  	right: 0;
+  	margin: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .btn {
+    height: 60px;
+    border-radius: 10px;
+    font-size: 2.0rem!important;
+    border: 1px solid yellowgreen;
+    background-color: #FCBB83;
+    color: #534bff; // previous white
+  }
+  .btnRow {
+    margin-bottom: 10px;
+  }
+  span {
+    margin-left: auto;
+  }
+  ion-icon {
+    margin-left: auto;
+    font-size: 2em;
+  }
+  #notifications-badge {
+      background-color: red;
+      position: absolute;
+      top: 12px;
+      right: 8px;
+      border-radius: 100%;
+  }
+  .activeState {
+    display: inline-flex;
+    color: red; 
+    border: 1px solid;
+    border-radius: 10px;
+  }
+  .activeState > ion-label {
+    margin: 0;
+    text-align: center;
+  }
+  .stateIcon {
+    font-size: 1.2em;
+    margin-top: 0;
+    margin-right: 10px;
+  }
+}

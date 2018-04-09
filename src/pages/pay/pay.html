@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-navbar color=navBarColor>
+    <ion-title>
+      <ion-row>
+        <ion-col class="back-icon" col-1>
+          <ion-icon (click)="previousPage()" name="ios-arrow-back"></ion-icon>
+        </ion-col>
+        <ion-col col-8>
+          <ion-label>Pay</ion-label>
+        </ion-col>
+        <ion-col col-3>
+          <img [src]="image" float-right/>
+        </ion-col>
+      </ion-row>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-label class="title">You will not receive new hires if your credit balance is zero.</ion-label>
+    </ion-row>
+    <ion-row>
+      <ion-label >Credit Balance Rs.{{creditAmount}}</ion-label>
+    </ion-row>
+    <ion-row>
+      <button (click)="pay()" ion-button class="btn" block><span>PAY</span><ion-icon name='ios-arrow-down'></ion-icon></button>
+    </ion-row>
+    <form class="form" id="hidden" [formGroup]="recharge" (ngSubmit)="sendPin()">
+      <ion-row>
+        <ion-label class="title2">Enter your pin number below without any white space</ion-label>
+      </ion-row>
+      <ion-row>
+        <ion-col col-2>
+          <ion-label class="pinTitle" fixed>PIN</ion-label>
+        </ion-col>
+        <ion-col col-10>
+          <ion-input type="number" class="pin" formControlName="pin"></ion-input>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <button type="submit" ion-button class="btn" block><span>SEND</span><ion-icon name="send"></ion-icon></button>
+      </ion-row>
+    </form>
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar color=navBarColor>
+    <ion-title>Copyright &copy; 2018 Civiten</ion-title>
+  </ion-toolbar>
+</ion-footer>

@@ -1,0 +1,83 @@
+page-view-new-hire {
+  .page-title {
+    color: blue;
+    text-align: center;
+    font-size: 2.5rem!important;
+    background-color: #FCBB83;
+    height: 3.6rem;
+    padding-top: 2px;
+    margin-right: 0;
+  }
+  ion-label {
+    overflow: visible;
+    white-space: normal;
+  }
+  // .hire-section {
+  //   color: #0B00FF;
+  //   margin-bottom: 10px;
+  //   border-radius: 10px;
+  //   padding: 10px;
+  //   background-color: white;
+  //   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  // }
+  span {
+    margin-left: auto;
+  }
+  ion-icon {
+    margin-left: auto;
+  }
+  .btn {
+    background-color: #FCBB83;
+    border-radius: 10px;
+    font-size: 2.0rem!important;
+  }
+  .warning {
+    font-size: 2rem;
+  }
+  // .label {
+  //   display: table-cell;
+  // }
+  .yes {
+    color: green;
+  }
+  .back {
+    color: white;
+    background-color: green;
+  }
+  .no {
+    color: red;
+  }
+  .description {
+    color: green;
+    font-size: 1.6rem;
+  }
+  .key {
+    font-size: 1.8rem;
+    margin-bottom: 0;
+  }
+  .value {
+    color: #0B00FF;
+    font-size: 1.8rem;
+    margin-bottom: 0;
+  }
+  .details {
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  }
+  .back-icon {
+    margin: auto;
+  }
+  .rate {
+    border: 1px solid #FCBB83;
+    border-radius: 5px;
+    background-color: #ffffff;
+  }
+  .rate-title{
+    font-size: 1.8rem!important;
+    color: #0B00FF;
+    font-weight: bold;
+  }
+}

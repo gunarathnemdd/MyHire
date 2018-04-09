@@ -1,0 +1,75 @@
+// http://ionicframework.com/docs/theming/
+
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+  
+.toolbar-title-md {
+    padding: 0 12px;
+    font-size: 2rem;
+    font-weight: 500;
+    color: #ffffff;
+  }
+  
+  .text-input {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  
+  .content-md {
+    background-color: #f2ffd8!important;
+  }
+  
+  .back-button.show-back-button {
+    display: none!important;
+  }
+
+  .alert-md .alert-wrapper {
+    border-radius: 10px;
+  }
+
+  .alert-md .alert-head {
+    text-align: center;
+  }
+
+  .alert-md .alert-sub-title {
+    margin-top: 15px;
+    margin-bottom: -20px;
+  }
+
+  .alert-md .alert-head .alert-title{
+    color: red;
+  }
+
+  .alert-md .alert-button {
+    margin: auto;
+  }
+
+  .alert-md .alert-button-group {
+    padding: 8px;
+  }
+
+  ion-header ion-navbar ion-title ion-row ion-col ion-label {
+    font-size: 21px;
+  }
+
+  ion-header ion-navbar ion-title ion-row ion-col img {
+    width: 38px;
+    margin-top: 12px;
+  }
+
+  ion-footer .toolbar-title {
+    font-size: 16px;
+    font-weight: 400;
+  }
