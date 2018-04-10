@@ -82,7 +82,7 @@ export class ActivatePage {
 				this.fallAsleep();
 			}
 		)
-	}
+	}	
 
 	fallAsleep() {
 		this.insomnia.allowSleepAgain();
@@ -92,7 +92,7 @@ export class ActivatePage {
 	getNewHire() {
 		//let intervalID = setInterval(() => {
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=no&state=new').subscribe(data => {
-			if (data != null) {
+			if ((data != null) && (Object.keys(data).length == 1)) {
 				this.noOfNewHires = 1;
 				this.storage.set('noOfNewHires', this.noOfNewHires);
 				this.nativeAudio.play('newHire');
@@ -133,9 +133,9 @@ export class ActivatePage {
 
 	getConfirmedHires() {
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=yes&state=confirmed').subscribe(data => {
-			if (data != null) {
+			if ((data != null) && (data != '0')) {
 				let hire = data;
-				hire = filter(hire, o => (o.p_date >= moment().format('YYYY-MM-DD')) && (o.p_time >= moment().format('hh:mm a')))
+				hire = filter(hire, o => o.p_date >= moment().format('YYYY-MM-DD'));
 				this.noOfConfirmedHires = Object.keys(hire).length;
 				if (this.noOfConfirmedHires == 0) {
 					this.noOfConfirmedHires = null;
@@ -283,7 +283,7 @@ export class ActivatePage {
 	newHire() {
 		console.log("newHire");
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=no&state=new').subscribe(data => {
-			if (data != null) {
+			if ((data != null) && (Object.keys(data).length == 1)) {
 				this.navCtrl.push(ViewNewHirePage);
 			}
 			else {
@@ -301,7 +301,7 @@ export class ActivatePage {
 	confirmedHire() {
 		console.log("confirmedHire");
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=yes&state=confirmed').subscribe(data => {
-			if (data != null) {
+			if ((data != null) && (data != '0')) {
 				this.navCtrl.push(ViewConfirmedHiresPage);
 			}
 			else {
