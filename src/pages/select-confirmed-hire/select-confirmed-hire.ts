@@ -18,6 +18,7 @@ export class SelectConfirmedHirePage {
   public time: any;
   public date: any;
   public customerId: any;
+  public hireRate: number;
 
   constructor(
     public navCtrl: NavController,
@@ -32,6 +33,7 @@ export class SelectConfirmedHirePage {
       this.time = navParams.get('p_time');
       this.date = navParams.get('p_date');
       this.customerId = navParams.get('p_tpNumber');
+      this.hireRate = navParams.get('p_hireRate');
   }
 
   ionViewDidLoad() {

@@ -1,18 +1,19 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ModalController, ToastController, AlertController } from 'ionic-angular';
+import { Platform, NavController, NavParams, ModalController, ToastController, AlertController } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Vibration } from '@ionic-native/vibration';
 import { LocalNotifications } from '@ionic-native/local-notifications';
-import { BackgroundMode } from '@ionic-native/background-mode';
 import { Insomnia } from '@ionic-native/insomnia';
 import { orderBy, filter } from 'lodash';
 import moment from 'moment';
+import { Push, PushObject, PushOptions } from '@ionic-native/push';
 
 import { PayPage } from '../pay/pay';
 import { ViewNewHirePage } from '../view-new-hire/view-new-hire';
 import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
+import { ViewRejectedMessagePage } from '../view-rejected-message/view-rejected-message';
 
 @Component({
 	selector: 'page-activate',
@@ -38,14 +39,15 @@ export class ActivatePage {
 	public data: any;
 
 	constructor(
+		public platform: Platform,
 		public navCtrl: NavController,
 		public navParams: NavParams,
 		public http: HttpClient,
 		private storage: Storage,
 		private nativeAudio: NativeAudio,
 		private vibration: Vibration,
+		private push: Push,
 		private localNotifications: LocalNotifications,
-		private backgroundMode: BackgroundMode,
 		public toastCtrl: ToastController,
 		public modalCtrl: ModalController,
 		public alertCtrl: AlertController,
@@ -55,12 +57,8 @@ export class ActivatePage {
 		this.actionIcon = "ios-eye";
 		this.isActive = "Deactive";
 		this.stateIcon = "close";
-		// this.backgroundMode.on("activate").subscribe(() => {
-		// 	this.nativeAudio.preloadComplex('newHire', 'assets/media/alert.MP3', 1, 1, 0);
-		// 	setInterval(this.getNewHire, 10000);
-		// });
-		// this.backgroundMode.enable();
 		this.nativeAudio.preloadComplex('newHire', 'assets/media/alert.MP3', 1, 1, 0);
+		this.initPushNotification();
 	}
 
 	ionViewDidLoad() {
@@ -71,6 +69,7 @@ export class ActivatePage {
 					if (key == "driverId") { this.driverIdStorage = value; }
 					else if (key == "intervalID") { this.intervalId = value; }
 					else if (key == "noOfNewHires") { this.noOfNewHires = value; }
+					else if (key == "isNotified") { this.isNotified = value; console.log(value); }
 				}).then(() => {
 					clearInterval(this.intervalId);
 					console.log('driverId: ', this.driverIdStorage);
@@ -88,11 +87,10 @@ export class ActivatePage {
 		this.insomnia.allowSleepAgain();
 	}
 
-	//getNewHire = () => {
 	getNewHire() {
-		//let intervalID = setInterval(() => {
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=no&state=new').subscribe(data => {
-			if (data != null) {
+			console.log(data);
+			if ((data != null) && (Object.keys(data).length == 1)) {
 				this.noOfNewHires = 1;
 				this.storage.set('noOfNewHires', this.noOfNewHires);
 				this.nativeAudio.play('newHire');
@@ -100,8 +98,9 @@ export class ActivatePage {
 				this.vibration.vibrate([500, 500, 500, 1000, 500, 500, 500]);
 				if (!this.isNotified) {
 					this.isNotified = true;
+					this.storage.set('isNotified', true);
 					this.deactive();
-					this.getNotification();
+					//this.getNotification();
 				}
 			}
 			else {
@@ -111,6 +110,7 @@ export class ActivatePage {
 					this.isNotified = false;
 					this.noOfNewHires = null;
 					console.log(this.noOfNewHires);
+					this.storage.set('isNotified', false);
 					this.storage.set('noOfNewHires', this.noOfNewHires);
 					this.active();
 				}
@@ -120,22 +120,20 @@ export class ActivatePage {
 				let message = "Network error! Please check your internet connection.";
 				this.toaster(message);
 			});
-		//}, 10000);
-		//this.storage.set('intervalID', intervalID);
 	}
 
-	getNotification() {
-		this.localNotifications.schedule({
-			id: 1,
-			text: 'You Have an New Hire',
-		});
-	}
+	// getNotification() {
+	// 	this.localNotifications.schedule({
+	// 		id: 1,
+	// 		text: 'You Have an New Hire',
+	// 	});
+	// }
 
 	getConfirmedHires() {
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=yes&state=confirmed').subscribe(data => {
-			if (data != null) {
+			if ((data != null) && (data != '0')) {
 				let hire = data;
-				hire = filter(hire, o => (o.p_date >= moment().format('YYYY-MM-DD')) && (o.p_time >= moment().format('hh:mm a')))
+				hire = filter(hire, o => o.p_date >= moment().format('YYYY-MM-DD'));
 				this.noOfConfirmedHires = Object.keys(hire).length;
 				if (this.noOfConfirmedHires == 0) {
 					this.noOfConfirmedHires = null;
@@ -283,7 +281,7 @@ export class ActivatePage {
 	newHire() {
 		console.log("newHire");
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=no&state=new').subscribe(data => {
-			if (data != null) {
+			if ((data != null) && (Object.keys(data).length == 1)) {
 				this.navCtrl.push(ViewNewHirePage);
 			}
 			else {
@@ -301,7 +299,7 @@ export class ActivatePage {
 	confirmedHire() {
 		console.log("confirmedHire");
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=yes&state=confirmed').subscribe(data => {
-			if (data != null) {
+			if (this.noOfConfirmedHires > 0) { //((data != null) && (data != '0')) {
 				this.navCtrl.push(ViewConfirmedHiresPage);
 			}
 			else {
@@ -334,6 +332,7 @@ export class ActivatePage {
 		let alert = this.alertCtrl.create({
 			title: title,
 			subTitle: message,
+			enableBackdropDismiss: false,
 			buttons: [
 				{
 					text: 'OK',
@@ -343,4 +342,67 @@ export class ActivatePage {
 		});
 		alert.present();
 	}
+
+	initPushNotification() {
+		if (!this.platform.is('cordova')) {
+			console.log('Push notifications not initialized. Cordova is not available - Run in physical device');
+			return;
+		}
+		const options: PushOptions = {
+			android: {
+				senderID: '326433778451'
+			},
+			ios: {
+				alert: 'true',
+				badge: false,
+				sound: 'true'
+			},
+			windows: {}
+		};
+		const pushObject: PushObject = this.push.init(options);
+
+		pushObject.on('notification').subscribe((data: any) => {
+			console.log('data -> ' , data);
+			//if user using app and push notification comes
+			if (data.additionalData.foreground) {
+				// if application open, show popup
+				let confirmAlert = this.alertCtrl.create({
+					title: data.title,
+					message: data.message,
+					buttons: [{
+						text: 'View',
+						handler: () => {
+							//TODO: Your logic here
+							if (data.title == "New Hire") {
+								this.navCtrl.push(ViewNewHirePage);
+							}
+							else if (data.title == "Hire Confirmed") {
+								this.navCtrl.push(ViewConfirmedHiresPage);
+							}
+							else if (data.title == "Hire Rejected") {
+								this.navCtrl.push(ViewRejectedMessagePage);
+							}
+						}
+					}]
+				});
+				confirmAlert.present();
+			} else {
+				//if user NOT using app and push notification comes
+				//TODO: Your logic on click of push notification directly
+				if (data.title == "New Hire") {
+					this.navCtrl.push(ViewNewHirePage);
+				}
+				else if (data.title == "Hire Confirmed") {
+					this.navCtrl.push(ViewConfirmedHiresPage);
+				}
+				else if (data.title == "Hire Rejected") {
+					this.navCtrl.push(ViewRejectedMessagePage);
+				}
+				console.log('Push notification clicked');
+			}
+		});
+
+		pushObject.on('error').subscribe(error => console.log(error));
+	}
+
 }

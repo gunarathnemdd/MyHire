@@ -65,6 +65,7 @@ export class ViewNewHirePage {
     let alert = this.alertCtrl.create({
       title: 'Confirm',
       subTitle: 'If you want to confirm this hire, please enter your rate.',
+      enableBackdropDismiss: false,
       inputs: [
         {
           name: 'rate',
@@ -86,24 +87,12 @@ export class ViewNewHirePage {
                 console.log(data);
                 this.storage.set('noOfNewHires', null);
                 if (data["response"] == "confirmed") {
-                  this.loading = this.loadingCtrl.create({
-                    spinner: 'bubbles',
-                    content: "Please wait for the passenger's response"
-                  });
-                  this.loading.present();
-                  this.isPassengerConfirmed(this.hireNo);
-                  // this.http.get(this.host + '/myHire_updateDriverBalanceAfterHire.php?driverId=' + this.driverId).subscribe(data => {
-                  //   let toast = this.toastCtrl.create({
-                  //     message: 'Rs.5 Successfully Deduced from Your Account',
-                  //     duration: 3000,
-                  //     position: 'bottom'
-                  //   });
-                  //   toast.present();
-                  //   this.navCtrl.setRoot(ActivatePage);
-                  // });
+                  let message = "Please wait for the passenger's response";
+                  this.toaster(message);
+                  this.navCtrl.setRoot(ActivatePage);
                 }
                 else {
-                  this.http.get(this.host + '/myHire_deleteHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId).subscribe(data => {
+                  this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId).subscribe(data => {
                     console.log(data);
                     this.navCtrl.setRoot(ActivatePage);
                     let message = 'Network Error!';
@@ -137,52 +126,68 @@ export class ViewNewHirePage {
     toast.present();
   }
 
-  isPassengerConfirmed(hireNo) {
-    clearTimeout(this.timeoutId);
-    this.http.get(this.host + '/myHire_isPassengerConfirmed.php?hireNo=' + hireNo).subscribe(data => {
-      if (data["Passenger_Accept"] == "yes") {
-        this.loading.dismiss();
-        let alert = this.alertCtrl.create({
-          title: 'Confirmed',
-          subTitle: 'Passenger confirmed your hire rate.',
-          buttons: [
-            {
-              text: 'OK',
-              handler: data => {
-                this.navCtrl.setRoot(ViewConfirmedHiresPage);
-              }
-            }
-          ]
-        });
-        alert.present();
-      }
-      else if (data["Passenger_Accept"] == "No") {
-        this.loading.dismiss();
-        let alert = this.alertCtrl.create({
-          title: 'Rejected',
-          subTitle: 'Passenger rejected your hire rate.',
-          buttons: [
-            {
-              text: 'OK',
-              handler: data => {
-                this.navCtrl.setRoot(ActivatePage);
-              }
-            }
-          ]
-        });
-        alert.present();
-      }
-      else {
-        this.timeoutId = setTimeout(() => {
-          this.isPassengerConfirmed(hireNo);
-        }, 10000);
-      }
-    },
-      (err) => {
-        let message = "Network error! Please check your internet connection.";
-        this.toaster(message);
-      });
-  }
+  // isPassengerConfirmed(hireNo) {
+  //   clearTimeout(this.timeoutId);
+  //   this.http.get(this.host + '/myHire_isPassengerConfirmed.php?hireNo=' + hireNo).subscribe(data => {
+  //     if (data["Passenger_Accept"] == "yes") {
+  //       this.loading.dismiss();
+  //       let alert = this.alertCtrl.create({
+  //         title: 'Confirmed',
+  //         subTitle: 'Passenger confirmed your hire rate.',
+  //         buttons: [
+  //           {
+  //             text: 'OK',
+  //             handler: data => {
+  //               this.navCtrl.setRoot(ViewConfirmedHiresPage);
+  //             }
+  //           }
+  //         ]
+  //       });
+  //       alert.present();
+  //     }
+  //     else if (data["Passenger_Accept"] == "reject") {
+  //       this.loading.dismiss();
+  //       let alert = this.alertCtrl.create({
+  //         title: 'Rejected',
+  //         subTitle: 'Passenger rejected your hire rate.',
+  //         buttons: [
+  //           {
+  //             text: 'OK',
+  //             handler: data => {
+  //               this.navCtrl.setRoot(ActivatePage);
+  //             }
+  //           }
+  //         ]
+  //       });
+  //       alert.present();
+  //     }
+  //     else if (data["Passenger_Accept"] == "error") {
+  //       this.loading.dismiss();
+  //       let alert = this.alertCtrl.create({
+  //         title: 'Rejected',
+  //         subTitle: 'Passenger rejected your hire rate.',
+  //         buttons: [
+  //           {
+  //             text: 'OK',
+  //             handler: data => {
+  //               this.navCtrl.setRoot(ActivatePage);
+  //             }
+  //           }
+  //         ]
+  //       });
+  //       alert.present();
+  //     }
+  //     else {
+  //       this.timeoutId = setTimeout(() => {
+  //         this.isPassengerConfirmed(hireNo);
+  //       }, 10000);
+  //     }
+  //   },
+  //     (err) => {
+  //       let message = "Network error! Please check your internet connection.";
+  //       this.toaster(message);
+  //     });
+  // }
 
   confirmNo() {
     let alert = this.alertCtrl.create({
@@ -196,7 +201,7 @@ export class ViewNewHirePage {
         {
           text: 'Yes',
           handler: data => {
-            this.http.get(this.host + '/myHire_deleteHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId).subscribe(data => {
+            this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId).subscribe(data => {
               console.log(data);
               this.storage.set('noOfNewHires', null);
               this.navCtrl.setRoot(ActivatePage);

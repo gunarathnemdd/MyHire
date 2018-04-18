@@ -9,7 +9,6 @@ import { IonicStorageModule } from '@ionic/storage';
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Vibration } from '@ionic-native/vibration';
 import { LocalNotifications } from '@ionic-native/local-notifications';
-import { BackgroundMode } from '@ionic-native/background-mode';
 import { SMS } from '@ionic-native/sms';
 import { Insomnia } from '@ionic-native/insomnia';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
@@ -23,6 +22,7 @@ import { ForgotPasswordPage } from '../pages/forgot-password/forgot-password';
 import { ViewNewHirePage } from '../pages/view-new-hire/view-new-hire';
 import { SelectConfirmedHirePage } from '../pages/select-confirmed-hire/select-confirmed-hire';
 import { ViewConfirmedHiresPage } from '../pages/view-confirmed-hires/view-confirmed-hires';
+import { ViewRejectedMessagePage } from '../pages/view-rejected-message/view-rejected-message';
 
 @NgModule({
   declarations: [
@@ -33,7 +33,8 @@ import { ViewConfirmedHiresPage } from '../pages/view-confirmed-hires/view-confi
     ForgotPasswordPage,
     ViewNewHirePage,
     SelectConfirmedHirePage,
-    ViewConfirmedHiresPage
+    ViewConfirmedHiresPage,
+    ViewRejectedMessagePage
   ],
   imports: [
     BrowserModule,
@@ -50,7 +51,8 @@ import { ViewConfirmedHiresPage } from '../pages/view-confirmed-hires/view-confi
     ForgotPasswordPage,
     ViewNewHirePage,
     SelectConfirmedHirePage,
-    ViewConfirmedHiresPage
+    ViewConfirmedHiresPage,
+    ViewRejectedMessagePage
   ],
   providers: [
     StatusBar,
@@ -59,7 +61,6 @@ import { ViewConfirmedHiresPage } from '../pages/view-confirmed-hires/view-confi
     NativeAudio,
     Vibration,
     LocalNotifications,
-    BackgroundMode,
     SMS,
     Insomnia,
     LocationAccuracy,

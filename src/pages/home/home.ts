@@ -10,6 +10,8 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
 import { ActivatePage } from '../activate/activate';
 import { ForgotPasswordPage } from '../forgot-password/forgot-password';
 import { ViewNewHirePage } from '../view-new-hire/view-new-hire';
+import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
+import { ViewRejectedMessagePage } from '../view-rejected-message/view-rejected-message';
 
 @Component({
   selector: 'page-home',
@@ -96,6 +98,7 @@ export class HomePage {
     let alert = this.alertCtrl.create({
       title: title,
       subTitle: message,
+      enableBackdropDismiss: false,
       buttons: ['OK']
     });
     alert.present();
@@ -129,16 +132,9 @@ export class HomePage {
       this.http.get(this.host + '/myHire_updateDeviceToken.php?driverId=' + driverId + '&token=' + data.registrationId).subscribe(data => {
         console.log(data);
       });
-      //TODO - send device token to server
     });
 
-    pushObject.on('error').subscribe(error => console.log(error)); //this.notification(error)
-  }
-
-  showNotification(message) {
-    this.localNotifications.schedule({
-      text: message
-    });
+    pushObject.on('error').subscribe(error => console.log(error));
   }
 
 }

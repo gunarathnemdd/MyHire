@@ -40,8 +40,6 @@ export class MyApp {
       statusBar.styleDefault();
       splashScreen.hide();
       
-      this.initPushNotification();
-      
       this.locationAccuracy.canRequest().then((canRequest: boolean) => {
         if(canRequest) {
           // the accuracy option will be ignored by iOS
@@ -112,61 +110,6 @@ export class MyApp {
       }
 
       navigator.geolocation.watchPosition(onSuccess, onError, options);
-    });
-  }
-
-  initPushNotification() {
-    if (!this.platform.is('cordova')) {
-      console.log('Push notifications not initialized. Cordova is not available - Run in physical device');
-      return;
-    }
-    const options: PushOptions = {
-      android: {
-        senderID: '326433778451'
-      },
-      ios: {
-        alert: 'true',
-        badge: false,
-        sound: 'true'
-      },
-      windows: {}
-    };
-    const pushObject: PushObject = this.push.init(options);
-
-    pushObject.on('notification').subscribe((data: any) => {
-      console.log('data -> ' + data);
-      //if user using app and push notification comes
-      if (data.additionalData.foreground) {
-        // if application open, show popup
-        let confirmAlert = this.alertCtrl.create({
-          title: data.title,
-          message: data.message,
-          buttons: [{
-            text: 'Ignore',
-            role: 'cancel'
-          }, {
-            text: 'View',
-            handler: () => {
-              //TODO: Your logic here
-              this.showNotification(data.message);
-            }
-          }]
-        });
-        confirmAlert.present();
-      } else {
-        //if user NOT using app and push notification comes
-        //TODO: Your logic on click of push notification directly
-        this.showNotification(data.message);
-        console.log('Push notification clicked');
-      }
-    });
-
-    pushObject.on('error').subscribe(error => console.log(error));
-  }
-
-  showNotification(message) {
-    this.localNotifications.schedule({
-      text: message
     });
   }
 }
