@@ -23,6 +23,7 @@ import { ForgotPasswordPage } from '../pages/forgot-password/forgot-password';
 import { ViewNewHirePage } from '../pages/view-new-hire/view-new-hire';
 import { SelectConfirmedHirePage } from '../pages/select-confirmed-hire/select-confirmed-hire';
 import { ViewConfirmedHiresPage } from '../pages/view-confirmed-hires/view-confirmed-hires';
+import { ViewRejectedMessagePage } from '../pages/view-rejected-message/view-rejected-message';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { ViewConfirmedHiresPage } from '../pages/view-confirmed-hires/view-confi
     ForgotPasswordPage,
     ViewNewHirePage,
     SelectConfirmedHirePage,
-    ViewConfirmedHiresPage
+    ViewConfirmedHiresPage,
+    ViewRejectedMessagePage
   ],
   imports: [
     BrowserModule,
@@ -50,7 +52,8 @@ import { ViewConfirmedHiresPage } from '../pages/view-confirmed-hires/view-confi
     ForgotPasswordPage,
     ViewNewHirePage,
     SelectConfirmedHirePage,
-    ViewConfirmedHiresPage
+    ViewConfirmedHiresPage,
+    ViewRejectedMessagePage
   ],
   providers: [
     StatusBar,

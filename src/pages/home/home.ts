@@ -10,6 +10,8 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
 import { ActivatePage } from '../activate/activate';
 import { ForgotPasswordPage } from '../forgot-password/forgot-password';
 import { ViewNewHirePage } from '../view-new-hire/view-new-hire';
+import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
+import { ViewRejectedMessagePage } from '../view-rejected-message/view-rejected-message';
 
 @Component({
   selector: 'page-home',
@@ -96,6 +98,7 @@ export class HomePage {
     let alert = this.alertCtrl.create({
       title: title,
       subTitle: message,
+      enableBackdropDismiss: false,
       buttons: ['OK']
     });
     alert.present();
@@ -130,6 +133,50 @@ export class HomePage {
         console.log(data);
       });
       //TODO - send device token to server
+    });
+
+    pushObject.on('notification').subscribe((data: any) => {
+      console.log('data -> ' + data);
+      //if user using app and push notification comes
+      if (data.additionalData.foreground) {
+        // if application open, show popup
+        let confirmAlert = this.alertCtrl.create({
+          title: data.title,
+          message: data.message,
+          enableBackdropDismiss: false,
+          buttons: [{
+            text: 'View',
+            handler: () => {
+              //TODO: Your logic here
+              if(data.title == "New Hire") {
+								this.navCtrl.push(ViewNewHirePage);
+							}
+							else if(data.title == "Hire Confirmed") {
+								this.navCtrl.push(ViewConfirmedHiresPage);
+              }
+              else if(data.title == "Hire Rejected") {
+								this.navCtrl.push(ViewRejectedMessagePage);
+							}
+              this.showNotification(data.message);
+            }
+          }]
+        });
+        confirmAlert.present();
+      } else {
+        //if user NOT using app and push notification comes
+        //TODO: Your logic on click of push notification directly
+        if(data.title == "New Hire") {
+          this.navCtrl.push(ViewNewHirePage);
+        }
+        else if(data.title == "Hire Confirmed") {
+          this.navCtrl.push(ViewConfirmedHiresPage);
+        }
+        else if(data.title == "Hire Rejected") {
+          this.navCtrl.push(ViewRejectedMessagePage);
+        }
+        this.showNotification(data.message);
+        console.log('Push notification clicked');
+      }
     });
 
     pushObject.on('error').subscribe(error => console.log(error)); //this.notification(error)

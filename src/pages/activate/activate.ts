@@ -71,6 +71,7 @@ export class ActivatePage {
 					if (key == "driverId") { this.driverIdStorage = value; }
 					else if (key == "intervalID") { this.intervalId = value; }
 					else if (key == "noOfNewHires") { this.noOfNewHires = value; }
+					else if (key == "isNotified") { this.isNotified = value; console.log(value); }
 				}).then(() => {
 					clearInterval(this.intervalId);
 					console.log('driverId: ', this.driverIdStorage);
@@ -82,7 +83,7 @@ export class ActivatePage {
 				this.fallAsleep();
 			}
 		)
-	}	
+	}
 
 	fallAsleep() {
 		this.insomnia.allowSleepAgain();
@@ -92,7 +93,9 @@ export class ActivatePage {
 	getNewHire() {
 		//let intervalID = setInterval(() => {
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=no&state=new').subscribe(data => {
+			console.log(data);
 			if ((data != null) && (Object.keys(data).length == 1)) {
+				console.log('getNewHire if: ' + this.isNotified);
 				this.noOfNewHires = 1;
 				this.storage.set('noOfNewHires', this.noOfNewHires);
 				this.nativeAudio.play('newHire');
@@ -100,17 +103,20 @@ export class ActivatePage {
 				this.vibration.vibrate([500, 500, 500, 1000, 500, 500, 500]);
 				if (!this.isNotified) {
 					this.isNotified = true;
+					this.storage.set('isNotified', true);
 					this.deactive();
 					this.getNotification();
 				}
 			}
 			else {
+				console.log('getNewHire if else: ' + this.isNotified);
 				this.nativeAudio.stop('newHire');
 				this.vibration.vibrate(0);
 				if (this.isNotified) {
 					this.isNotified = false;
 					this.noOfNewHires = null;
 					console.log(this.noOfNewHires);
+					this.storage.set('isNotified', false);
 					this.storage.set('noOfNewHires', this.noOfNewHires);
 					this.active();
 				}
@@ -301,7 +307,7 @@ export class ActivatePage {
 	confirmedHire() {
 		console.log("confirmedHire");
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=yes&state=confirmed').subscribe(data => {
-			if ((data != null) && (data != '0')) {
+			if (this.noOfConfirmedHires > 0) { //((data != null) && (data != '0')) {
 				this.navCtrl.push(ViewConfirmedHiresPage);
 			}
 			else {
@@ -334,6 +340,7 @@ export class ActivatePage {
 		let alert = this.alertCtrl.create({
 			title: title,
 			subTitle: message,
+			enableBackdropDismiss: false,
 			buttons: [
 				{
 					text: 'OK',
