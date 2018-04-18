@@ -132,60 +132,9 @@ export class HomePage {
       this.http.get(this.host + '/myHire_updateDeviceToken.php?driverId=' + driverId + '&token=' + data.registrationId).subscribe(data => {
         console.log(data);
       });
-      //TODO - send device token to server
     });
 
-    pushObject.on('notification').subscribe((data: any) => {
-      console.log('data -> ' + data);
-      //if user using app and push notification comes
-      if (data.additionalData.foreground) {
-        // if application open, show popup
-        let confirmAlert = this.alertCtrl.create({
-          title: data.title,
-          message: data.message,
-          enableBackdropDismiss: false,
-          buttons: [{
-            text: 'View',
-            handler: () => {
-              //TODO: Your logic here
-              if(data.title == "New Hire") {
-								this.navCtrl.push(ViewNewHirePage);
-							}
-							else if(data.title == "Hire Confirmed") {
-								this.navCtrl.push(ViewConfirmedHiresPage);
-              }
-              else if(data.title == "Hire Rejected") {
-								this.navCtrl.push(ViewRejectedMessagePage);
-							}
-              this.showNotification(data.message);
-            }
-          }]
-        });
-        confirmAlert.present();
-      } else {
-        //if user NOT using app and push notification comes
-        //TODO: Your logic on click of push notification directly
-        if(data.title == "New Hire") {
-          this.navCtrl.push(ViewNewHirePage);
-        }
-        else if(data.title == "Hire Confirmed") {
-          this.navCtrl.push(ViewConfirmedHiresPage);
-        }
-        else if(data.title == "Hire Rejected") {
-          this.navCtrl.push(ViewRejectedMessagePage);
-        }
-        this.showNotification(data.message);
-        console.log('Push notification clicked');
-      }
-    });
-
-    pushObject.on('error').subscribe(error => console.log(error)); //this.notification(error)
-  }
-
-  showNotification(message) {
-    this.localNotifications.schedule({
-      text: message
-    });
+    pushObject.on('error').subscribe(error => console.log(error));
   }
 
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ModalController, ToastController, AlertController } from 'ionic-angular';
+import { Platform, NavController, NavParams, ModalController, ToastController, AlertController } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 import { NativeAudio } from '@ionic-native/native-audio';
@@ -9,10 +9,12 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 import { Insomnia } from '@ionic-native/insomnia';
 import { orderBy, filter } from 'lodash';
 import moment from 'moment';
+import { Push, PushObject, PushOptions } from '@ionic-native/push';
 
 import { PayPage } from '../pay/pay';
 import { ViewNewHirePage } from '../view-new-hire/view-new-hire';
 import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
+import { ViewRejectedMessagePage } from '../view-rejected-message/view-rejected-message';
 
 @Component({
 	selector: 'page-activate',
@@ -38,12 +40,14 @@ export class ActivatePage {
 	public data: any;
 
 	constructor(
+		public platform: Platform,
 		public navCtrl: NavController,
 		public navParams: NavParams,
 		public http: HttpClient,
 		private storage: Storage,
 		private nativeAudio: NativeAudio,
 		private vibration: Vibration,
+		private push: Push,
 		private localNotifications: LocalNotifications,
 		private backgroundMode: BackgroundMode,
 		public toastCtrl: ToastController,
@@ -61,6 +65,7 @@ export class ActivatePage {
 		// });
 		// this.backgroundMode.enable();
 		this.nativeAudio.preloadComplex('newHire', 'assets/media/alert.MP3', 1, 1, 0);
+		this.initPushNotification();
 	}
 
 	ionViewDidLoad() {
@@ -350,4 +355,67 @@ export class ActivatePage {
 		});
 		alert.present();
 	}
+
+	initPushNotification() {
+		if (!this.platform.is('cordova')) {
+			console.log('Push notifications not initialized. Cordova is not available - Run in physical device');
+			return;
+		}
+		const options: PushOptions = {
+			android: {
+				senderID: '326433778451'
+			},
+			ios: {
+				alert: 'true',
+				badge: false,
+				sound: 'true'
+			},
+			windows: {}
+		};
+		const pushObject: PushObject = this.push.init(options);
+
+		pushObject.on('notification').subscribe((data: any) => {
+			console.log('data -> ' + data);
+			//if user using app and push notification comes
+			if (data.additionalData.foreground) {
+				// if application open, show popup
+				let confirmAlert = this.alertCtrl.create({
+					title: data.title,
+					message: data.message,
+					buttons: [{
+						text: 'View',
+						handler: () => {
+							//TODO: Your logic here
+							if (data.title == "New Hire") {
+								this.navCtrl.push(ViewNewHirePage);
+							}
+							else if (data.title == "Hire Confirmed") {
+								this.navCtrl.push(ViewConfirmedHiresPage);
+							}
+							else if (data.title == "Hire Rejected") {
+								this.navCtrl.push(ViewRejectedMessagePage);
+							}
+						}
+					}]
+				});
+				confirmAlert.present();
+			} else {
+				//if user NOT using app and push notification comes
+				//TODO: Your logic on click of push notification directly
+				if (data.title == "New Hire") {
+					this.navCtrl.push(ViewNewHirePage);
+				}
+				else if (data.title == "Hire Confirmed") {
+					this.navCtrl.push(ViewConfirmedHiresPage);
+				}
+				else if (data.title == "Hire Rejected") {
+					this.navCtrl.push(ViewRejectedMessagePage);
+				}
+				console.log('Push notification clicked');
+			}
+		});
+
+		pushObject.on('error').subscribe(error => console.log(error));
+	}
+
 }

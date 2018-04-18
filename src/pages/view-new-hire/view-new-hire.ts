@@ -90,22 +90,6 @@ export class ViewNewHirePage {
                   let message = "Please wait for the passenger's response";
                   this.toaster(message);
                   this.navCtrl.setRoot(ActivatePage);
-                  // this.loading = this.loadingCtrl.create({
-                  //   spinner: 'bubbles',
-                  //   content: "Please wait for the passenger's response"
-                  // });
-                  // this.loading.present();
-                  // this.isPassengerConfirmed(this.hireNo);
-
-                  // this.http.get(this.host + '/myHire_updateDriverBalanceAfterHire.php?driverId=' + this.driverId).subscribe(data => {
-                  //   let toast = this.toastCtrl.create({
-                  //     message: 'Rs.5 Successfully Deduced from Your Account',
-                  //     duration: 3000,
-                  //     position: 'bottom'
-                  //   });
-                  //   toast.present();
-                  //   this.navCtrl.setRoot(ActivatePage);
-                  // });
                 }
                 else {
                   this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId).subscribe(data => {
