@@ -9,7 +9,6 @@ import { IonicStorageModule } from '@ionic/storage';
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Vibration } from '@ionic-native/vibration';
 import { LocalNotifications } from '@ionic-native/local-notifications';
-import { BackgroundMode } from '@ionic-native/background-mode';
 import { SMS } from '@ionic-native/sms';
 import { Insomnia } from '@ionic-native/insomnia';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
@@ -62,7 +61,6 @@ import { ViewRejectedMessagePage } from '../pages/view-rejected-message/view-rej
     NativeAudio,
     Vibration,
     LocalNotifications,
-    BackgroundMode,
     SMS,
     Insomnia,
     LocationAccuracy,

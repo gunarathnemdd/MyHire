@@ -5,7 +5,6 @@ import { Storage } from '@ionic/storage';
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Vibration } from '@ionic-native/vibration';
 import { LocalNotifications } from '@ionic-native/local-notifications';
-import { BackgroundMode } from '@ionic-native/background-mode';
 import { Insomnia } from '@ionic-native/insomnia';
 import { orderBy, filter } from 'lodash';
 import moment from 'moment';
@@ -49,7 +48,6 @@ export class ActivatePage {
 		private vibration: Vibration,
 		private push: Push,
 		private localNotifications: LocalNotifications,
-		private backgroundMode: BackgroundMode,
 		public toastCtrl: ToastController,
 		public modalCtrl: ModalController,
 		public alertCtrl: AlertController,
@@ -59,11 +57,6 @@ export class ActivatePage {
 		this.actionIcon = "ios-eye";
 		this.isActive = "Deactive";
 		this.stateIcon = "close";
-		// this.backgroundMode.on("activate").subscribe(() => {
-		// 	this.nativeAudio.preloadComplex('newHire', 'assets/media/alert.MP3', 1, 1, 0);
-		// 	setInterval(this.getNewHire, 10000);
-		// });
-		// this.backgroundMode.enable();
 		this.nativeAudio.preloadComplex('newHire', 'assets/media/alert.MP3', 1, 1, 0);
 		this.initPushNotification();
 	}
@@ -94,13 +87,10 @@ export class ActivatePage {
 		this.insomnia.allowSleepAgain();
 	}
 
-	//getNewHire = () => {
 	getNewHire() {
-		//let intervalID = setInterval(() => {
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=no&state=new').subscribe(data => {
 			console.log(data);
 			if ((data != null) && (Object.keys(data).length == 1)) {
-				console.log('getNewHire if: ' + this.isNotified);
 				this.noOfNewHires = 1;
 				this.storage.set('noOfNewHires', this.noOfNewHires);
 				this.nativeAudio.play('newHire');
@@ -110,11 +100,10 @@ export class ActivatePage {
 					this.isNotified = true;
 					this.storage.set('isNotified', true);
 					this.deactive();
-					this.getNotification();
+					//this.getNotification();
 				}
 			}
 			else {
-				console.log('getNewHire if else: ' + this.isNotified);
 				this.nativeAudio.stop('newHire');
 				this.vibration.vibrate(0);
 				if (this.isNotified) {
@@ -131,16 +120,14 @@ export class ActivatePage {
 				let message = "Network error! Please check your internet connection.";
 				this.toaster(message);
 			});
-		//}, 10000);
-		//this.storage.set('intervalID', intervalID);
 	}
 
-	getNotification() {
-		this.localNotifications.schedule({
-			id: 1,
-			text: 'You Have an New Hire',
-		});
-	}
+	// getNotification() {
+	// 	this.localNotifications.schedule({
+	// 		id: 1,
+	// 		text: 'You Have an New Hire',
+	// 	});
+	// }
 
 	getConfirmedHires() {
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=yes&state=confirmed').subscribe(data => {
@@ -375,7 +362,7 @@ export class ActivatePage {
 		const pushObject: PushObject = this.push.init(options);
 
 		pushObject.on('notification').subscribe((data: any) => {
-			console.log('data -> ' + data);
+			console.log('data -> ' , data);
 			//if user using app and push notification comes
 			if (data.additionalData.foreground) {
 				// if application open, show popup
