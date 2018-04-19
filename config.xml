@@ -85,7 +85,7 @@
     <plugin name="cordova-plugin-local-notification" spec="^0.9.0-beta.2" />
     <plugin name="phonegap-plugin-push" spec="^2.1.3">
         <variable name="FCM_VERSION" value="11.6.2" />
-        <variable name="SENDER_ID" value="326433778451" />
+        <variable name="SENDER_ID" value="693145121166" />
     </plugin>
     <plugin name="cordova-plugin-request-location-accuracy" spec="^2.2.2" />
     <plugin name="cordova-plugin-splashscreen" spec="^5.0.2" />

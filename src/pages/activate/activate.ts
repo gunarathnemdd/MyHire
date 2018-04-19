@@ -350,7 +350,7 @@ export class ActivatePage {
 		}
 		const options: PushOptions = {
 			android: {
-				senderID: '326433778451'
+				senderID: '693145121166'
 			},
 			ios: {
 				alert: 'true',
