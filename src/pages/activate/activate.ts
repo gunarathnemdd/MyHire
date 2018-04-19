@@ -368,7 +368,7 @@ export class ActivatePage {
 				// if application open, show popup
 				let confirmAlert = this.alertCtrl.create({
 					title: data.title,
-					message: data.message,
+					subTitle: data.message,
 					buttons: [{
 						text: 'View',
 						handler: () => {
