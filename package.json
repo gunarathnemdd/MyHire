@@ -73,7 +73,7 @@
       "cordova-plugin-local-notification": {},
       "phonegap-plugin-push": {
         "FCM_VERSION": "11.6.2",
-        "SENDER_ID": "326433778451"
+        "SENDER_ID": "693145121166"
       },
       "cordova-plugin-request-location-accuracy": {},
       "cordova-plugin-splashscreen": {},
