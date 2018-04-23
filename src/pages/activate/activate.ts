@@ -69,7 +69,7 @@ export class ActivatePage {
 					if (key == "driverId") { this.driverIdStorage = value; }
 					else if (key == "intervalID") { this.intervalId = value; }
 					else if (key == "noOfNewHires") { this.noOfNewHires = value; }
-					else if (key == "isNotified") { this.isNotified = value; console.log(value); }
+					else if (key == "isNotified") { this.isNotified = value; }
 				}).then(() => {
 					clearInterval(this.intervalId);
 					console.log('driverId: ', this.driverIdStorage);
@@ -362,7 +362,7 @@ export class ActivatePage {
 		const pushObject: PushObject = this.push.init(options);
 
 		pushObject.on('notification').subscribe((data: any) => {
-			console.log('data -> ' , data);
+			console.log('data -> ', data);
 			//if user using app and push notification comes
 			if (data.additionalData.foreground) {
 				// if application open, show popup
@@ -378,9 +378,12 @@ export class ActivatePage {
 							}
 							else if (data.title == "Hire Confirmed") {
 								this.navCtrl.push(ViewConfirmedHiresPage);
+								this.sendDriverDetailsToPassenger(data.additionalData['subtitle']);
 							}
 							else if (data.title == "Hire Rejected") {
-								this.navCtrl.push(ViewRejectedMessagePage);
+								this.navCtrl.push(ViewRejectedMessagePage, {
+									hireNo: data.additionalData['subtitle']
+								});
 							}
 						}
 					}]
@@ -394,15 +397,30 @@ export class ActivatePage {
 				}
 				else if (data.title == "Hire Confirmed") {
 					this.navCtrl.push(ViewConfirmedHiresPage);
+					this.sendDriverDetailsToPassenger(data.additionalData['subtitle']);
 				}
 				else if (data.title == "Hire Rejected") {
-					this.navCtrl.push(ViewRejectedMessagePage);
+					this.navCtrl.push(ViewRejectedMessagePage, {
+						hireNo: data.additionalData['subtitle']
+					});
 				}
 				console.log('Push notification clicked');
 			}
 		});
 
 		pushObject.on('error').subscribe(error => console.log(error));
+	}
+
+	sendDriverDetailsToPassenger(hireNo) {
+		this.http.get(this.host + '/myHire_sendPassengerRemind.php?hireNo=' + hireNo).subscribe(data => {
+			console.log(data);
+			let message = "You have a hire. Please be on time.";
+			this.toaster(message);
+		},
+			(err) => {
+				let message = "Network error! Please check your internet connection.";
+				this.toaster(message);
+			});
 	}
 
 }
