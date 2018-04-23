@@ -144,7 +144,7 @@ export class ActivatePage {
 
 	getActiveState() {
 		this.http.get(this.host + '/myHire_getBalance.php?driverId=' + this.driverIdStorage).subscribe(data => {
-			if ((data["balance"] != "error") && (data["balance"] != 0)) {
+			if ((data["balance"] != "error") && (data["balance"] > 0)) {
 				console.log(data["balance"]);
 				this.http.get(this.host + '/myHire_isDriverAvailable.php?driverId=' + this.driverIdStorage).subscribe(data => {
 					// set a key/value
@@ -210,7 +210,7 @@ export class ActivatePage {
 		this.http.get(this.host + '/myHire_checkActiveHireAvailability.php?driverId=' + this.driverIdStorage).subscribe(data => {
 			this.data = data;
 			this.http.get(this.host + '/myHire_getBalance.php?driverId=' + this.driverIdStorage).subscribe(data => {
-				if ((data["balance"] != "error") && (data["balance"] != 0) && (this.data["response"] == "can activate")) {
+				if ((data["balance"] != "error") && (data["balance"] > 0) && (this.data["response"] == "can activate")) {
 					this.http.get(this.host + '/myHire_driverAvailability.php?driverId=' + this.driverIdStorage + '&available=yes').subscribe(data => {
 						// set a key/value
 						this.storage.set('driverAvailabiity', data["availability"]).then(data => {
