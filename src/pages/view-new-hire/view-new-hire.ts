@@ -21,6 +21,7 @@ export class ViewNewHirePage {
   public loading: any;
   public timeoutId: any;
   public hireNo: any;
+  public hireRate: any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -83,21 +84,41 @@ export class ViewNewHirePage {
           handler: data => {
             if (data.rate != "") {
               console.log(data.rate);
-              this.http.get(this.host + '/myHire_confirmHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId + '&rate=' + data.rate).subscribe(data => {
-                console.log(data);
-                this.storage.set('noOfNewHires', null);
-                if (data["response"] == "confirmed") {
-                  let message = "Please wait for the passenger's response";
-                  this.toaster(message);
-                  this.navCtrl.setRoot(ActivatePage);
+              this.hireRate = data.rate;
+              this.http.get(this.host + '/myHire_getBalance.php?driverId=' + this.driverId).subscribe(data => {
+                if (data["balance"] != "error") {
+                  let creditAmount = data["balance"];
+                  let reduce = (this.hireRate * 5) / 100;
+                  let balance = creditAmount - reduce;
+                  if (balance < 0) {
+                    this.balanceWarning();
+                  }
+                  else {
+                    this.http.get(this.host + '/myHire_confirmHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId + '&rate=' + this.hireRate).subscribe(data => {
+                      console.log(data);
+                      this.storage.set('noOfNewHires', null);
+                      if (data["response"] == "confirmed") {
+                        let message = "Please wait for the passenger's response";
+                        this.toaster(message);
+                        this.navCtrl.setRoot(ActivatePage);
+                      }
+                      else {
+                        this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId).subscribe(data => {
+                          console.log(data);
+                          this.navCtrl.setRoot(ActivatePage);
+                          let message = 'Network Error!';
+                          this.toaster(message);
+                        });
+                      }
+                    },
+                      (err) => {
+                        let message = "Network error! Please check your internet connection.";
+                        this.toaster(message);
+                      });
+                  }
                 }
                 else {
-                  this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId).subscribe(data => {
-                    console.log(data);
-                    this.navCtrl.setRoot(ActivatePage);
-                    let message = 'Network Error!';
-                    this.toaster(message);
-                  });
+                  this.balanceWarning();
                 }
               },
                 (err) => {
@@ -126,68 +147,51 @@ export class ViewNewHirePage {
     toast.present();
   }
 
-  // isPassengerConfirmed(hireNo) {
-  //   clearTimeout(this.timeoutId);
-  //   this.http.get(this.host + '/myHire_isPassengerConfirmed.php?hireNo=' + hireNo).subscribe(data => {
-  //     if (data["Passenger_Accept"] == "yes") {
-  //       this.loading.dismiss();
-  //       let alert = this.alertCtrl.create({
-  //         title: 'Confirmed',
-  //         subTitle: 'Passenger confirmed your hire rate.',
-  //         buttons: [
-  //           {
-  //             text: 'OK',
-  //             handler: data => {
-  //               this.navCtrl.setRoot(ViewConfirmedHiresPage);
-  //             }
-  //           }
-  //         ]
-  //       });
-  //       alert.present();
-  //     }
-  //     else if (data["Passenger_Accept"] == "reject") {
-  //       this.loading.dismiss();
-  //       let alert = this.alertCtrl.create({
-  //         title: 'Rejected',
-  //         subTitle: 'Passenger rejected your hire rate.',
-  //         buttons: [
-  //           {
-  //             text: 'OK',
-  //             handler: data => {
-  //               this.navCtrl.setRoot(ActivatePage);
-  //             }
-  //           }
-  //         ]
-  //       });
-  //       alert.present();
-  //     }
-  //     else if (data["Passenger_Accept"] == "error") {
-  //       this.loading.dismiss();
-  //       let alert = this.alertCtrl.create({
-  //         title: 'Rejected',
-  //         subTitle: 'Passenger rejected your hire rate.',
-  //         buttons: [
-  //           {
-  //             text: 'OK',
-  //             handler: data => {
-  //               this.navCtrl.setRoot(ActivatePage);
-  //             }
-  //           }
-  //         ]
-  //       });
-  //       alert.present();
-  //     }
-  //     else {
-  //       this.timeoutId = setTimeout(() => {
-  //         this.isPassengerConfirmed(hireNo);
-  //       }, 10000);
-  //     }
-  //   },
-  //     (err) => {
-  //       let message = "Network error! Please check your internet connection.";
-  //       this.toaster(message);
-  //     });
-  // }
+  balanceWarning() {
+    let alert = this.alertCtrl.create({
+      title: 'Insufficient Balance!',
+      subTitle: 'Press OK button to take this hire and your balance get minus balance. To get another hire, you have to recharge your account. Otherwise press No to rejeact this hire.',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'No',
+          handler: data => {
+            this.confirmNo();
+          }
+        },
+        {
+          text: 'OK',
+          handler: data => {
+            this.http.get(this.host + '/myHire_confirmHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId + '&rate=' + this.hireRate).subscribe(data => {
+              console.log(data);
+              this.storage.set('noOfNewHires', null);
+              if (data["response"] == "confirmed") {
+                let message = "Please wait for the passenger's response";
+                this.toaster(message);
+                this.navCtrl.setRoot(ActivatePage);
+              }
+              else {
+                this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId).subscribe(data => {
+                  console.log(data);
+                  this.navCtrl.setRoot(ActivatePage);
+                  let message = 'Network Error!';
+                  this.toaster(message);
+                });
+              }
+            },
+              (err) => {
+                let message = "Network error! Please check your internet connection.";
+                this.toaster(message);
+              });
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
 
   confirmNo() {
     let alert = this.alertCtrl.create({
