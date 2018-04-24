@@ -9,6 +9,7 @@ import { Insomnia } from '@ionic-native/insomnia';
 import { orderBy, filter } from 'lodash';
 import moment from 'moment';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 import { PayPage } from '../pay/pay';
 import { ViewNewHirePage } from '../view-new-hire/view-new-hire';
@@ -46,6 +47,7 @@ export class ActivatePage {
 		private storage: Storage,
 		private nativeAudio: NativeAudio,
 		private vibration: Vibration,
+		private backgroundMode: BackgroundMode,
 		private push: Push,
 		private localNotifications: LocalNotifications,
 		public toastCtrl: ToastController,
@@ -57,8 +59,14 @@ export class ActivatePage {
 		this.actionIcon = "ios-eye";
 		this.isActive = "Deactive";
 		this.stateIcon = "close";
+		this.state = 0;
 		this.nativeAudio.preloadComplex('newHire', 'assets/media/alert.MP3', 1, 1, 0);
 		this.initPushNotification();
+		this.storage.set('driverAvailabiity', 'no');
+		this.backgroundMode.enable();
+		this.backgroundMode.on("activate").subscribe(()=>{
+			this.deactive();
+		});
 	}
 
 	ionViewDidLoad() {
@@ -69,7 +77,7 @@ export class ActivatePage {
 					if (key == "driverId") { this.driverIdStorage = value; }
 					else if (key == "intervalID") { this.intervalId = value; }
 					else if (key == "noOfNewHires") { this.noOfNewHires = value; }
-					else if (key == "isNotified") { this.isNotified = value; console.log(value); }
+					else if (key == "isNotified") { this.isNotified = value; }
 				}).then(() => {
 					clearInterval(this.intervalId);
 					console.log('driverId: ', this.driverIdStorage);
@@ -143,46 +151,65 @@ export class ActivatePage {
 	}
 
 	getActiveState() {
-		this.http.get(this.host + '/myHire_getBalance.php?driverId=' + this.driverIdStorage).subscribe(data => {
-			if ((data["balance"] != "error") && (data["balance"] != 0)) {
-				console.log(data["balance"]);
-				this.http.get(this.host + '/myHire_isDriverAvailable.php?driverId=' + this.driverIdStorage).subscribe(data => {
-					// set a key/value
-					this.storage.set('driverAvailabiity', data["availability"]).then(data => {
-						this.storage.get('driverAvailabiity').then((val) => {
-							console.log(val);
-							if (val == 'yes') {
-								console.log('active');
-								this.activeState = "DEACTIVATE";
-								this.actionIcon = "ios-eye-off";
-								this.isActive = "Active";
-								this.stateIcon = "checkmark";
-								this.state = 1;
-								let message = "You are Activated.";
-								this.toaster(message);
-							}
-							else {
-								console.log('deactive');
-								this.activeState = "ACTIVATE";
-								this.actionIcon = "ios-eye";
-								this.isActive = "Deactive";
-								this.stateIcon = "close";
-								this.state = 0;
-								let message = "Deactivated. Please Activate to Receive Hires.";
-								this.toaster(message);
-							}
-						});
-					});
-					this.storage.set('errorMassege', 'Please wait..');
-				},
-					(err) => {
-						let message = "Network error!";
-						this.toaster(message);
-					});
-			}
-			else {
-				this.deactive();
-			}
+		this.http.get(this.host + '/myHire_checkActiveHireAvailability.php?driverId=' + this.driverIdStorage).subscribe(data => {
+			this.data = data;
+			this.http.get(this.host + '/myHire_getBalance.php?driverId=' + this.driverIdStorage).subscribe(data => {
+				if ((data["balance"] != "error") && (data["balance"] > 0) && (this.data["response"] == "can activate")) {
+					// console.log(data["balance"]);
+					// this.http.get(this.host + '/myHire_isDriverAvailable.php?driverId=' + this.driverIdStorage).subscribe(data => {
+					// 	// set a key/value
+					// 	this.storage.set('driverAvailabiity', data["availability"]).then(data => {
+					// 		this.storage.get('driverAvailabiity').then((val) => {
+					// 			console.log(val);
+					// 			if (val == 'yes') {
+					// 				console.log('active');
+					// 				this.activeState = "DEACTIVATE";
+					// 				this.actionIcon = "ios-eye-off";
+					// 				this.isActive = "Active";
+					// 				this.stateIcon = "checkmark";
+					// 				this.state = 1;
+					// 				let message = "You are Activated.";
+					// 				this.toaster(message);
+					// 			}
+					// 			else {
+					// 				console.log('deactive');
+					// 				this.activeState = "ACTIVATE";
+					// 				this.actionIcon = "ios-eye";
+					// 				this.isActive = "Deactive";
+					// 				this.stateIcon = "close";
+					// 				this.state = 0;
+					// 				let message = "Deactivated. Please Activate to Receive Hires.";
+					// 				this.toaster(message);
+					// 			}
+					// 		});
+					// 	});
+					// 	this.storage.set('errorMassege', 'Please wait..');
+					// },
+					// 	(err) => {
+					// 		let message = "Network error!";
+					// 		this.toaster(message);
+					// 	});
+					this.active();
+				}
+				else if (this.data["response"] == "driver didn't accepted") {
+					let title = "You Have an Active Hire!";
+					let message = "Please accept or reject your new hire first to activate your account.";
+					this.alert(title, message);
+					this.deactive();
+				}
+				else if (this.data["response"] == "passenger didn't accepted") {
+					let title = "You Have an Active Hire!";
+					let message = "Please wait while passenger accept or reject your hire rate to activate your account.";
+					this.alert(title, message);
+					this.deactive();
+				}
+				else {
+					let title = "Insufficient Balance!";
+					let message = "Please recharge to activate your account.";
+					this.alert(title, message);
+					this.deactive();
+				}
+			});
 		});
 	}
 
@@ -210,7 +237,7 @@ export class ActivatePage {
 		this.http.get(this.host + '/myHire_checkActiveHireAvailability.php?driverId=' + this.driverIdStorage).subscribe(data => {
 			this.data = data;
 			this.http.get(this.host + '/myHire_getBalance.php?driverId=' + this.driverIdStorage).subscribe(data => {
-				if ((data["balance"] != "error") && (data["balance"] != 0) && (this.data["response"] == "can activate")) {
+				if ((data["balance"] != "error") && (data["balance"] > 0) && (this.data["response"] == "can activate")) {
 					this.http.get(this.host + '/myHire_driverAvailability.php?driverId=' + this.driverIdStorage + '&available=yes').subscribe(data => {
 						// set a key/value
 						this.storage.set('driverAvailabiity', data["availability"]).then(data => {
@@ -362,7 +389,7 @@ export class ActivatePage {
 		const pushObject: PushObject = this.push.init(options);
 
 		pushObject.on('notification').subscribe((data: any) => {
-			console.log('data -> ' , data);
+			console.log('data -> ', data);
 			//if user using app and push notification comes
 			if (data.additionalData.foreground) {
 				// if application open, show popup
@@ -378,9 +405,12 @@ export class ActivatePage {
 							}
 							else if (data.title == "Hire Confirmed") {
 								this.navCtrl.push(ViewConfirmedHiresPage);
+								this.sendDriverDetailsToPassenger(data.additionalData['subtitle']);
 							}
 							else if (data.title == "Hire Rejected") {
-								this.navCtrl.push(ViewRejectedMessagePage);
+								this.navCtrl.push(ViewRejectedMessagePage, {
+									hireNo: data.additionalData['subtitle']
+								});
 							}
 						}
 					}]
@@ -394,15 +424,30 @@ export class ActivatePage {
 				}
 				else if (data.title == "Hire Confirmed") {
 					this.navCtrl.push(ViewConfirmedHiresPage);
+					this.sendDriverDetailsToPassenger(data.additionalData['subtitle']);
 				}
 				else if (data.title == "Hire Rejected") {
-					this.navCtrl.push(ViewRejectedMessagePage);
+					this.navCtrl.push(ViewRejectedMessagePage, {
+						hireNo: data.additionalData['subtitle']
+					});
 				}
 				console.log('Push notification clicked');
 			}
 		});
 
 		pushObject.on('error').subscribe(error => console.log(error));
+	}
+
+	sendDriverDetailsToPassenger(hireNo) {
+		this.http.get(this.host + '/myHire_sendPassengerRemind.php?hireNo=' + hireNo).subscribe(data => {
+			console.log(data);
+			let message = "You have a hire. Please be on time.";
+			this.toaster(message);
+		},
+			(err) => {
+				let message = "Network error! Please check your internet connection.";
+				this.toaster(message);
+			});
 	}
 
 }

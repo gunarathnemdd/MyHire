@@ -13,6 +13,7 @@ import { SMS } from '@ionic-native/sms';
 import { Insomnia } from '@ionic-native/insomnia';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -65,6 +66,7 @@ import { ViewRejectedMessagePage } from '../pages/view-rejected-message/view-rej
     Insomnia,
     LocationAccuracy,
     Push,
+    BackgroundMode,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
