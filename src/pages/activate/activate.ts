@@ -38,6 +38,9 @@ export class ActivatePage {
 	public isNotified: boolean = false;
 	public intervalId: any;
 	public data: any;
+	public hireNo: any;
+	public pushTimeOut: any;
+	public isBackgroundMode: any;
 
 	constructor(
 		public platform: Platform,
@@ -63,10 +66,8 @@ export class ActivatePage {
 		this.nativeAudio.preloadComplex('newHire', 'assets/media/alert.MP3', 1, 1, 0);
 		this.initPushNotification();
 		this.storage.set('driverAvailabiity', 'no');
-		this.backgroundMode.enable();
-		this.backgroundMode.on("activate").subscribe(()=>{
-			this.deactive();
-		});
+		this.isBackgroundMode = navParams.get('backgroundMode');
+		console.log(this.isBackgroundMode);
 	}
 
 	ionViewDidLoad() {
@@ -81,9 +82,11 @@ export class ActivatePage {
 				}).then(() => {
 					clearInterval(this.intervalId);
 					console.log('driverId: ', this.driverIdStorage);
-					this.getNewHire();
 					this.getConfirmedHires();
-					this.getActiveState();
+					this.getNewHire();
+					if(this.isBackgroundMode != 'on') {
+						this.getActiveState();
+					}
 				}),
 			() => {
 				this.fallAsleep();
@@ -108,7 +111,6 @@ export class ActivatePage {
 					this.isNotified = true;
 					this.storage.set('isNotified', true);
 					this.deactive();
-					//this.getNotification();
 				}
 			}
 			else {
@@ -130,13 +132,6 @@ export class ActivatePage {
 			});
 	}
 
-	// getNotification() {
-	// 	this.localNotifications.schedule({
-	// 		id: 1,
-	// 		text: 'You Have an New Hire',
-	// 	});
-	// }
-
 	getConfirmedHires() {
 		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=yes&state=confirmed').subscribe(data => {
 			if ((data != null) && (data != '0')) {
@@ -155,41 +150,41 @@ export class ActivatePage {
 			this.data = data;
 			this.http.get(this.host + '/myHire_getBalance.php?driverId=' + this.driverIdStorage).subscribe(data => {
 				if ((data["balance"] != "error") && (data["balance"] > 0) && (this.data["response"] == "can activate")) {
-					// console.log(data["balance"]);
-					// this.http.get(this.host + '/myHire_isDriverAvailable.php?driverId=' + this.driverIdStorage).subscribe(data => {
-					// 	// set a key/value
-					// 	this.storage.set('driverAvailabiity', data["availability"]).then(data => {
-					// 		this.storage.get('driverAvailabiity').then((val) => {
-					// 			console.log(val);
-					// 			if (val == 'yes') {
-					// 				console.log('active');
-					// 				this.activeState = "DEACTIVATE";
-					// 				this.actionIcon = "ios-eye-off";
-					// 				this.isActive = "Active";
-					// 				this.stateIcon = "checkmark";
-					// 				this.state = 1;
-					// 				let message = "You are Activated.";
-					// 				this.toaster(message);
-					// 			}
-					// 			else {
-					// 				console.log('deactive');
-					// 				this.activeState = "ACTIVATE";
-					// 				this.actionIcon = "ios-eye";
-					// 				this.isActive = "Deactive";
-					// 				this.stateIcon = "close";
-					// 				this.state = 0;
-					// 				let message = "Deactivated. Please Activate to Receive Hires.";
-					// 				this.toaster(message);
-					// 			}
-					// 		});
-					// 	});
-					// 	this.storage.set('errorMassege', 'Please wait..');
-					// },
-					// 	(err) => {
-					// 		let message = "Network error!";
-					// 		this.toaster(message);
-					// 	});
-					this.active();
+					console.log(data["balance"]);
+					this.http.get(this.host + '/myHire_isDriverAvailable.php?driverId=' + this.driverIdStorage).subscribe(data => {
+						// set a key/value
+						this.storage.set('driverAvailabiity', data["availability"]).then(data => {
+							this.storage.get('driverAvailabiity').then((val) => {
+								console.log(val);
+								if (val == 'yes') {
+									console.log('active');
+									this.activeState = "DEACTIVATE";
+									this.actionIcon = "ios-eye-off";
+									this.isActive = "Active";
+									this.stateIcon = "checkmark";
+									this.state = 1;
+									let message = "You are Activated.";
+									this.toaster(message);
+								}
+								else {
+									console.log('deactive');
+									this.activeState = "ACTIVATE";
+									this.actionIcon = "ios-eye";
+									this.isActive = "Deactive";
+									this.stateIcon = "close";
+									this.state = 0;
+									let message = "Deactivated. Please Activate to Receive Hires.";
+									this.toaster(message);
+								}
+							});
+						});
+						this.storage.set('errorMassege', 'Please wait..');
+					},
+						(err) => {
+							let message = "Network error!";
+							this.toaster(message);
+						});
+					//this.active();
 				}
 				else if (this.data["response"] == "driver didn't accepted") {
 					let title = "You Have an Active Hire!";
@@ -211,17 +206,6 @@ export class ActivatePage {
 				}
 			});
 		});
-	}
-
-	playAudio() {
-		this.timeOut = setTimeout(() => {
-			if (--this.count) {
-				console.log(this.count);
-				this.playAudio();
-				this.nativeAudio.play('newHire');
-			}
-		}, 10000);
-		this.storage.set('intervalId', this.timeOut);
 	}
 
 	activeStateChange() {
@@ -390,6 +374,8 @@ export class ActivatePage {
 
 		pushObject.on('notification').subscribe((data: any) => {
 			console.log('data -> ', data);
+			this.hireNo = data.additionalData.subtitle;
+			console.log('this.hireNo -> ', this.hireNo);
 			//if user using app and push notification comes
 			if (data.additionalData.foreground) {
 				// if application open, show popup
@@ -405,11 +391,11 @@ export class ActivatePage {
 							}
 							else if (data.title == "Hire Confirmed") {
 								this.navCtrl.push(ViewConfirmedHiresPage);
-								this.sendDriverDetailsToPassenger(data.additionalData['subtitle']);
+								this.sendDriverDetailsToPassenger(this.hireNo);
 							}
 							else if (data.title == "Hire Rejected") {
 								this.navCtrl.push(ViewRejectedMessagePage, {
-									hireNo: data.additionalData['subtitle']
+									hireNo: this.hireNo
 								});
 							}
 						}
@@ -420,15 +406,18 @@ export class ActivatePage {
 				//if user NOT using app and push notification comes
 				//TODO: Your logic on click of push notification directly
 				if (data.title == "New Hire") {
+					this.backgroundMode.moveToForeground();
 					this.navCtrl.push(ViewNewHirePage);
 				}
 				else if (data.title == "Hire Confirmed") {
+					this.backgroundMode.moveToForeground();
 					this.navCtrl.push(ViewConfirmedHiresPage);
-					this.sendDriverDetailsToPassenger(data.additionalData['subtitle']);
+					this.sendDriverDetailsToPassenger(this.hireNo);
 				}
 				else if (data.title == "Hire Rejected") {
+					this.backgroundMode.moveToForeground();
 					this.navCtrl.push(ViewRejectedMessagePage, {
-						hireNo: data.additionalData['subtitle']
+						hireNo: this.hireNo
 					});
 				}
 				console.log('Push notification clicked');
@@ -443,6 +432,17 @@ export class ActivatePage {
 			console.log(data);
 			let message = "You have a hire. Please be on time.";
 			this.toaster(message);
+		},
+			(err) => {
+				let message = "Network error! Please check your internet connection.";
+				this.toaster(message);
+			});
+	}
+
+	deleteHire(hireNo) {
+		this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + hireNo + '&driverId=' + this.driverIdStorage + '&state=delete').subscribe(data => {
+			console.log(data);
+			this.storage.set('noOfNewHires', null);
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
