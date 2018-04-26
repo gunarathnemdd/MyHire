@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { NavController, NavParams, ModalController, AlertController, ToastController, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 import { ActivatePage } from '../activate/activate';
 import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
@@ -16,12 +17,14 @@ export class ViewNewHirePage {
   public driverId: string;
   public image: string;
   public host = 'http://www.my3wheel.lk/php/myHire';
+  public host2 = 'http://www.my3wheel.lk/php/my3Wheel';
   public hire: any[] = [];
   public rate: number;
   public loading: any;
   public timeoutId: any;
   public hireNo: any;
   public hireRate: any;
+  public pushTimeOut: any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -30,6 +33,7 @@ export class ViewNewHirePage {
     public navParams: NavParams,
     public http: HttpClient,
     private storage: Storage,
+    private backgroundMode: BackgroundMode,
     public modalCtrl: ModalController,
     public alertCtrl: AlertController,
     public toastCtrl: ToastController) {
@@ -44,6 +48,7 @@ export class ViewNewHirePage {
         if ((data != null) && (Object.keys(data).length == 1)) {
           this.hireNo = data[0]['p_hireNo'];
           this.driverId = data[0]['p_driverID'];
+          console.log(data[0]['p_hireNo']);
           this.hire.push({ name: data[0]['p_fullName'], from: data[0]['p_journeyStart'], to: data[0]['p_journeyEnd'], date: data[0]['p_date'], time: data[0]['p_time'] });
         }
         else {
@@ -91,34 +96,14 @@ export class ViewNewHirePage {
                   let reduce = (this.hireRate * 5) / 100;
                   let balance = creditAmount - reduce;
                   if (balance < 0) {
-                    this.balanceWarning();
+                    this.balanceWarning(this.hireNo, this.driverId, this.hireRate);
                   }
                   else {
-                    this.http.get(this.host + '/myHire_confirmHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId + '&rate=' + this.hireRate).subscribe(data => {
-                      console.log(data);
-                      this.storage.set('noOfNewHires', null);
-                      if (data["response"] == "confirmed") {
-                        let message = "Please wait for the passenger's response";
-                        this.toaster(message);
-                        this.navCtrl.setRoot(ActivatePage);
-                      }
-                      else {
-                        this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId).subscribe(data => {
-                          console.log(data);
-                          this.navCtrl.setRoot(ActivatePage);
-                          let message = 'Network Error!';
-                          this.toaster(message);
-                        });
-                      }
-                    },
-                      (err) => {
-                        let message = "Network error! Please check your internet connection.";
-                        this.toaster(message);
-                      });
+                    this.confirmHire(this.hireNo, this.driverId, this.hireRate);
                   }
                 }
                 else {
-                  this.balanceWarning();
+                  this.balanceWarning(this.hireNo, this.driverId, this.hireRate);
                 }
               },
                 (err) => {
@@ -147,7 +132,7 @@ export class ViewNewHirePage {
     toast.present();
   }
 
-  balanceWarning() {
+  balanceWarning(hireNo, driverId, hireRate) {
     let alert = this.alertCtrl.create({
       title: 'Insufficient Balance!',
       subTitle: 'Press OK button to take this hire and your balance get minus balance. To get another hire, you have to recharge your account. Otherwise press No to rejeact this hire.',
@@ -165,27 +150,7 @@ export class ViewNewHirePage {
         {
           text: 'OK',
           handler: data => {
-            this.http.get(this.host + '/myHire_confirmHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId + '&rate=' + this.hireRate).subscribe(data => {
-              console.log(data);
-              this.storage.set('noOfNewHires', null);
-              if (data["response"] == "confirmed") {
-                let message = "Please wait for the passenger's response";
-                this.toaster(message);
-                this.navCtrl.setRoot(ActivatePage);
-              }
-              else {
-                this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId).subscribe(data => {
-                  console.log(data);
-                  this.navCtrl.setRoot(ActivatePage);
-                  let message = 'Network Error!';
-                  this.toaster(message);
-                });
-              }
-            },
-              (err) => {
-                let message = "Network error! Please check your internet connection.";
-                this.toaster(message);
-              });
+            this.confirmHire(hireNo, driverId, hireRate);
           }
         }
       ]
@@ -205,20 +170,102 @@ export class ViewNewHirePage {
         {
           text: 'Yes',
           handler: data => {
-            this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + this.hireNo + '&driverId=' + this.driverId).subscribe(data => {
-              console.log(data);
-              this.storage.set('noOfNewHires', null);
-              this.navCtrl.setRoot(ActivatePage);
-            },
-              (err) => {
-                let message = "Network error! Please check your internet connection.";
-                this.toaster(message);
-              });
+            this.rejectHire(this.hireNo, this.driverId, 'reject', 'Hire rejected successfully!');
           }
         }
       ]
     });
     alert.present();
+  }
+
+  confirmHire(hireNo, driverId, hireRate) {
+    this.http.get(this.host + '/myHire_confirmHire.php?hireNo=' + hireNo + '&driverId=' + driverId + '&rate=' + hireRate).subscribe(data => {
+      console.log(data);
+      this.storage.set('noOfNewHires', null);
+      if (data["response"] == "confirmed") {
+        let message = "Please wait for the passenger's response";
+        this.toaster(message);
+        this.navCtrl.setRoot(ActivatePage, {
+          backgroundMode: 'on'
+        });
+        this.deleteAfterTimeOut();
+      }
+      else if (data['response'] == 'already deleted') {
+        this.storage.set('noOfNewHires', null);
+        this.navCtrl.setRoot(ActivatePage);
+        this.toaster("Hire is already deleted due to time out.");
+      }
+      else {
+        this.rejectHire(hireNo, driverId, 'reject', 'Network error! Please check your internet connection.');
+      }
+    },
+      (err) => {
+        this.navCtrl.setRoot(ActivatePage);
+        let message = "Network error! Please check your internet connection.";
+        this.toaster(message);
+      });
+  }
+
+  rejectHire(hireNo, driverId, state, message) {
+    if (state == 'reject') {
+      this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + hireNo + '&driverId=' + driverId + '&state=' + state).subscribe(data => {
+        console.log(data);
+        if (data['response'] == 'deleted') {
+          this.storage.set('noOfNewHires', null);
+          this.navCtrl.setRoot(ActivatePage);
+          this.toaster(message);
+        }
+        else if (data['response'] == 'already deleted') {
+          this.storage.set('noOfNewHires', null);
+          this.navCtrl.setRoot(ActivatePage);
+          this.toaster("Hire is already deeted due to time out.");
+        }
+        else {
+          this.navCtrl.setRoot(ActivatePage);
+          let message2 = "Network error! Please check your internet connection.";
+          this.toaster(message2);
+        }
+      },
+        (err) => {
+          let message2 = "Network error! Please check your internet connection.";
+          this.toaster(message2);
+        });
+    }
+    else {
+      this.http.get(this.host2 + '/my3Wheel_riderReject.php?hireNo=' + hireNo + '&driverId=' + driverId + '&state=' + state).subscribe(data => {
+        console.log(data);
+        this.navCtrl.setRoot(ActivatePage);
+      },
+        (err) => {
+          let message2 = "Network error! Please check your internet connection.";
+          this.toaster(message2);
+        });
+    }
+  }
+
+  deleteAfterTimeOut() {
+    console.log(this.hireNo);
+    this.backgroundMode.enable();
+    this.backgroundMode.moveToBackground();
+    this.backgroundMode.on("activate").subscribe(() => {
+      this.pushTimeOut = setTimeout(() => {
+        this.http.get(this.host + '/myHire_deleteTimeOutHires.php?hireNo=' + this.hireNo + '&state=passenger').subscribe(data => {
+          console.log(data);
+          if (data['responce'] != 'error') {
+            clearTimeout(this.pushTimeOut);
+            this.rejectHire(this.hireNo, this.driverId, 'delete', "Hire rejected! Passenger didn't responded your hire rate within 3 min.");
+          }
+          else {
+            clearTimeout(this.pushTimeOut);
+          }
+        },
+          (err) => {
+            clearTimeout(this.pushTimeOut);
+            let message = "Network error! Please check your internet connection.";
+            this.toaster(message);
+          });
+      }, 180000);
+    });
   }
 
 }

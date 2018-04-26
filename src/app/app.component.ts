@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Platform, AlertController } from 'ionic-angular';
+import { App, Platform, AlertController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
@@ -10,28 +10,32 @@ import { Storage } from '@ionic/storage';
 import 'rxjs/add/operator/filter';
 import moment from 'moment';
 import { Geolocation } from '@ionic-native/geolocation';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 import { HomePage } from '../pages/home/home';
+import { ActivatePage } from '../pages/activate/activate';
 
 @Component({
   templateUrl: 'app.html'
 })
 export class MyApp {
-  rootPage:any = HomePage;
+  rootPage: any = HomePage;
 
   public driverId: string;
   public host = 'http://www.my3wheel.lk/php/myHire';
   public lastUpdateTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
   constructor(
-    public platform: Platform, 
-    statusBar: StatusBar, 
+    public platform: Platform,
+    statusBar: StatusBar,
     splashScreen: SplashScreen,
+    public app: App,
     private locationAccuracy: LocationAccuracy,
     private geolocation: Geolocation,
     public http: HttpClient,
     public localNotifications: LocalNotifications,
     private push: Push,
+		private backgroundMode: BackgroundMode,
     private storage: Storage,
     public alertCtrl: AlertController) {
     platform.ready().then(() => {
@@ -39,9 +43,9 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
-      
+
       this.locationAccuracy.canRequest().then((canRequest: boolean) => {
-        if(canRequest) {
+        if (canRequest) {
           // the accuracy option will be ignored by iOS
           this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
             () => console.log('Request successful'),
@@ -110,6 +114,39 @@ export class MyApp {
       }
 
       navigator.geolocation.watchPosition(onSuccess, onError, options);
+
+      platform.registerBackButtonAction(() => {
+
+        let nav = app.getActiveNavs()[0];
+        let activeView = nav.getActive();
+
+        if ((activeView.name === "ActivatePage") || (activeView.name === "HomePage")) {
+
+          if (nav.canGoBack()) { //Can we go back?
+            nav.pop();
+          } else {
+            const alert = this.alertCtrl.create({
+              title: 'App Termination',
+              subTitle: 'Do you really want to close the app?',
+              buttons: [{
+                text: 'Cancel',
+                role: 'cancel',
+                handler: () => {
+                  console.log('Application exit prevented!');
+                }
+              }, {
+                text: 'Close App',
+                handler: () => {
+                  //platform.exitApp(); // Close this application
+                  this.backgroundMode.enable();
+                  this.backgroundMode.moveToBackground();
+                }
+              }]
+            });
+            alert.present();
+          }
+        }
+      });
     });
   }
 }
