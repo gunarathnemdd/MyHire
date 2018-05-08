@@ -84,7 +84,7 @@ export class ActivatePage {
 					console.log('driverId: ', this.driverIdStorage);
 					this.getConfirmedHires();
 					this.getNewHire();
-					if(this.isBackgroundMode != 'on') {
+					if (this.isBackgroundMode != 'on') {
 						this.getActiveState();
 					}
 				}),
@@ -262,7 +262,11 @@ export class ActivatePage {
 					let message = "Network error! Please check your internet connection.";
 					this.toaster(message);
 				});
-		});
+		},
+			(err) => {
+				let message = "Network error! Please check your internet connection.";
+				this.toaster(message);
+			});
 
 	}
 
