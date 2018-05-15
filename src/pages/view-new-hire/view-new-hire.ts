@@ -264,7 +264,7 @@ export class ViewNewHirePage {
             let message = "Network error! Please check your internet connection.";
             this.toaster(message);
           });
-      }, 180000);
+      }, 60000);
     });
   }
 
