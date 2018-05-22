@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { NavController, NavParams, ToastController, ViewController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 
 import { ActivatePage } from '../activate/activate';
+import { HttpServicesProvider } from '../../providers/http-services/http-services';
 
 @Component({
   selector: 'page-pay',
@@ -18,12 +18,11 @@ export class PayPage {
   public hiddenDiv: any;
   public pin: string;
   public driverId: string;
-  public host = 'http://www.my3wheel.lk/php/myHire';
 
   constructor(
     private formBuilder: FormBuilder,
     public navCtrl: NavController,
-    public http: HttpClient,
+    public service: HttpServicesProvider,
     public navParams: NavParams,
     private storage: Storage,
     public toastCtrl: ToastController,
@@ -40,7 +39,7 @@ export class PayPage {
     this.hiddenDiv.style.display = 'none';
     this.storage.get('driverId').then((val) => {
       this.driverId = val;
-      this.http.get(this.host + '/myHire_getBalance.php?driverId=' + this.driverId).subscribe(data => {
+      this.service.getBalance(this.driverId).subscribe(data => {
         console.log(data["balance"]);
         if(data["balance"] != "error") {
           this.creditAmount = data["balance"];
@@ -67,7 +66,7 @@ export class PayPage {
   sendPin() {
     if(this.recharge["valid"]) {
       this.pin = this.recharge["value"]["pin"];
-      this.http.get(this.host + '/myHire_updateDriverBalance.php?driverId=' + this.driverId + '&cardNo=' + this.pin).subscribe(data => {
+      this.service.updateDriverBalance(this.driverId, this.pin).subscribe(data => {
         if(data["response"] == "success") {
           this.navCtrl.setRoot(ActivatePage);
           let message = "Your Payment is Successful. Now You Can Activate.";

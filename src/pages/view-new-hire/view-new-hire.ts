@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { NavController, NavParams, ModalController, AlertController, ToastController, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
@@ -7,6 +6,7 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 
 import { ActivatePage } from '../activate/activate';
 import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
+import { HttpServicesProvider } from '../../providers/http-services/http-services';
 
 @Component({
   selector: 'page-view-new-hire',
@@ -16,8 +16,6 @@ export class ViewNewHirePage {
 
   public driverId: string;
   public image: string;
-  public host = 'http://www.my3wheel.lk/php/myHire';
-  public host2 = 'http://www.my3wheel.lk/php/my3Wheel';
   public hire: any[] = [];
   public rate: number;
   public loading: any;
@@ -31,7 +29,7 @@ export class ViewNewHirePage {
     public loadingCtrl: LoadingController,
     public navCtrl: NavController,
     public navParams: NavParams,
-    public http: HttpClient,
+    public service: HttpServicesProvider,
     private storage: Storage,
     private backgroundMode: BackgroundMode,
     public modalCtrl: ModalController,
@@ -43,7 +41,7 @@ export class ViewNewHirePage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad ViewNewHirePage');
     this.storage.get('driverId').then((val) => {
-      this.http.get(this.host + '/myHire_availableHire.php?driverId=' + val + '&confirm=no&state=new').subscribe(data => {
+      this.service.availableHire(val, 'no', 'new').subscribe(data => {
         console.log(data);
         if ((data != null) && (Object.keys(data).length == 1)) {
           this.hireNo = data[0]['p_hireNo'];
@@ -90,7 +88,7 @@ export class ViewNewHirePage {
             if (data.rate != "") {
               console.log(data.rate);
               this.hireRate = data.rate;
-              this.http.get(this.host + '/myHire_getBalance.php?driverId=' + this.driverId).subscribe(data => {
+              this.service.getBalance(this.driverId).subscribe(data => {
                 if (data["balance"] != "error") {
                   let creditAmount = data["balance"];
                   let reduce = (this.hireRate * 5) / 100;
@@ -179,7 +177,7 @@ export class ViewNewHirePage {
   }
 
   confirmHire(hireNo, driverId, hireRate) {
-    this.http.get(this.host + '/myHire_confirmHire.php?hireNo=' + hireNo + '&driverId=' + driverId + '&rate=' + hireRate).subscribe(data => {
+    this.service.confirmHire(hireNo, driverId, hireRate).subscribe(data => {
       console.log(data);
       this.storage.set('noOfNewHires', null);
       if (data["response"] == "confirmed") {
@@ -208,7 +206,7 @@ export class ViewNewHirePage {
 
   rejectHire(hireNo, driverId, state, message) {
     if (state == 'reject') {
-      this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + hireNo + '&driverId=' + driverId + '&state=' + state).subscribe(data => {
+      this.service.rejectHire(hireNo, driverId, state).subscribe(data => {
         console.log(data);
         if (data['response'] == 'deleted') {
           this.storage.set('noOfNewHires', null);
@@ -232,7 +230,7 @@ export class ViewNewHirePage {
         });
     }
     else {
-      this.http.get(this.host2 + '/my3Wheel_riderReject.php?hireNo=' + hireNo + '&driverId=' + driverId + '&state=' + state).subscribe(data => {
+      this.service.riderReject(hireNo, driverId, state).subscribe(data => {
         console.log(data);
         this.navCtrl.setRoot(ActivatePage);
       },
@@ -249,7 +247,7 @@ export class ViewNewHirePage {
     this.backgroundMode.moveToBackground();
     this.backgroundMode.on("activate").subscribe(() => {
       this.pushTimeOut = setTimeout(() => {
-        this.http.get(this.host + '/myHire_deleteTimeOutHires.php?hireNo=' + this.hireNo + '&state=passenger').subscribe(data => {
+        this.service.deleteTimeOutHires(this.hireNo, 'passenger').subscribe(data => {
           console.log(data);
           if (data['responce'] != 'error') {
             clearTimeout(this.pushTimeOut);

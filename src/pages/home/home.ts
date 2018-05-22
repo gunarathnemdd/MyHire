@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { Platform, NavController, ModalController, ToastController, AlertController } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Storage } from '@ionic/storage';
-import { HttpClient } from '@angular/common/http';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { LocalNotifications } from '@ionic-native/local-notifications';
@@ -12,6 +11,7 @@ import { ForgotPasswordPage } from '../forgot-password/forgot-password';
 import { ViewNewHirePage } from '../view-new-hire/view-new-hire';
 import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
 import { ViewRejectedMessagePage } from '../view-rejected-message/view-rejected-message';
+import { HttpServicesProvider } from '../../providers/http-services/http-services';
 
 @Component({
   selector: 'page-home',
@@ -25,13 +25,12 @@ export class HomePage {
   public tempID: string;
   public image: String;
   public errmsg = '';
-  public host = 'http://www.my3wheel.lk/php/myHire';
 
   constructor(
     public platform: Platform,
     public splashScreen: SplashScreen,
     public navCtrl: NavController,
-    public http: HttpClient,
+    public service: HttpServicesProvider,
     private storage: Storage,
     private push: Push,
     public localNotifications: LocalNotifications,
@@ -58,7 +57,7 @@ export class HomePage {
   logForm() {
     if(this.login["valid"]) {
       this.driverId = this.login["value"]["driverId"].replace(/\s/g,'');
-      this.http.get(this.host + '/myHire_login.php?driverId=' + this.driverId).subscribe(data => {
+      this.service.login(this.driverId).subscribe(data => {
           this.tempID = data["driverId"];
           if(data["driverId"] != "SL00") {
             this.initPushNotification(data["driverId"]);
@@ -129,7 +128,7 @@ export class HomePage {
 
     pushObject.on('registration').subscribe((data: any) => {
       console.log('device token -> ' + data.registrationId);
-      this.http.get(this.host + '/myHire_updateDeviceToken.php?driverId=' + driverId + '&token=' + data.registrationId).subscribe(data => {
+      this.service.updateDeviceToken(driverId, data.registrationId).subscribe(data => {
         console.log(data);
       });
     });

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ViewController, ToastController, AlertController } from 'ionic-angular';
-import { HttpClient } from '@angular/common/http';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { SMS } from '@ionic-native/sms';
 
 import { HomePage } from '../home/home';
+import { HttpServicesProvider } from '../../providers/http-services/http-services';
 
 @Component({
   selector: 'page-forgot-password',
@@ -16,7 +16,6 @@ export class ForgotPasswordPage {
   public image: String;
   public message: string;
   public mobile: any;
-  public host = 'http://www.my3wheel.lk/php/myHire';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -26,7 +25,7 @@ export class ForgotPasswordPage {
     public viewCtrl: ViewController, 
     public toastCtrl: ToastController,
     public alertCtrl: AlertController,
-    public http: HttpClient) {
+    public service: HttpServicesProvider) {
       this.image = 'assets/imgs/logo.jpg';
       this.forgotPassword = new FormGroup({
         mobile: new FormControl('', Validators.compose([Validators.minLength(9), Validators.maxLength(10), Validators.pattern('[0-9]*'), Validators.required]))
@@ -44,7 +43,7 @@ export class ForgotPasswordPage {
   recover() {
     if(this.forgotPassword["valid"]) {
       this.mobile = this.forgotPassword["value"]["mobile"];
-      this.http.get(this.host + '/myHire_forgotDriverId.php?phoneNo=' + this.mobile).subscribe(data => {
+      this.service.forgotDriverId(this.mobile).subscribe(data => {
         if(data["response"] == "success") {
           this.sms.send(this.mobile, 'Your Driver ID for the MyHire account: ' + data["result"]);
           this.navCtrl.setRoot(HomePage);

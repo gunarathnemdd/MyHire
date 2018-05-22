@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { Platform, NavController, NavParams, ModalController, ToastController, AlertController } from 'ionic-angular';
-import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Vibration } from '@ionic-native/vibration';
@@ -15,6 +14,7 @@ import { PayPage } from '../pay/pay';
 import { ViewNewHirePage } from '../view-new-hire/view-new-hire';
 import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
 import { ViewRejectedMessagePage } from '../view-rejected-message/view-rejected-message';
+import { HttpServicesProvider } from '../../providers/http-services/http-services';
 
 @Component({
 	selector: 'page-activate',
@@ -25,7 +25,6 @@ export class ActivatePage {
 	public image: string;
 	public driverIdStorage: string;
 	public isLocationOn: string;
-	public host = 'http://www.my3wheel.lk/php/myHire';
 	public noOfNewHires: number;
 	public noOfConfirmedHires: number;
 	public activeState: any;
@@ -46,7 +45,7 @@ export class ActivatePage {
 		public platform: Platform,
 		public navCtrl: NavController,
 		public navParams: NavParams,
-		public http: HttpClient,
+		public service: HttpServicesProvider,
 		private storage: Storage,
 		private nativeAudio: NativeAudio,
 		private vibration: Vibration,
@@ -99,7 +98,7 @@ export class ActivatePage {
 	}
 
 	getNewHire() {
-		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=no&state=new').subscribe(data => {
+		this.service.availableHire(this.driverIdStorage, 'no', 'new').subscribe(data => {
 			console.log(data);
 			if ((data != null) && (Object.keys(data).length == 1)) {
 				this.noOfNewHires = 1;
@@ -133,7 +132,7 @@ export class ActivatePage {
 	}
 
 	getConfirmedHires() {
-		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=yes&state=confirmed').subscribe(data => {
+		this.service.availableHire(this.driverIdStorage, 'yes', 'confirmed').subscribe(data => {
 			if ((data != null) && (data != '0')) {
 				let hire = data;
 				hire = filter(hire, o => o.p_date >= moment().format('YYYY-MM-DD'));
@@ -146,12 +145,12 @@ export class ActivatePage {
 	}
 
 	getActiveState() {
-		this.http.get(this.host + '/myHire_checkActiveHireAvailability.php?driverId=' + this.driverIdStorage).subscribe(data => {
+		this.service.checkActiveHireAvailability(this.driverIdStorage).subscribe(data => {
 			this.data = data;
-			this.http.get(this.host + '/myHire_getBalance.php?driverId=' + this.driverIdStorage).subscribe(data => {
+			this.service.getBalance(this.driverIdStorage).subscribe(data => {
 				if ((data["balance"] != "error") && (data["balance"] > 0) && (this.data["response"] == "can activate")) {
 					console.log(data["balance"]);
-					this.http.get(this.host + '/myHire_isDriverAvailable.php?driverId=' + this.driverIdStorage).subscribe(data => {
+					this.service.isDriverAvailable(this.driverIdStorage).subscribe(data => {
 						// set a key/value
 						this.storage.set('driverAvailabiity', data["availability"]).then(data => {
 							this.storage.get('driverAvailabiity').then((val) => {
@@ -218,11 +217,11 @@ export class ActivatePage {
 	}
 
 	active() {
-		this.http.get(this.host + '/myHire_checkActiveHireAvailability.php?driverId=' + this.driverIdStorage).subscribe(data => {
+		this.service.checkActiveHireAvailability(this.driverIdStorage).subscribe(data => {
 			this.data = data;
-			this.http.get(this.host + '/myHire_getBalance.php?driverId=' + this.driverIdStorage).subscribe(data => {
+			this.service.getBalance(this.driverIdStorage).subscribe(data => {
 				if ((data["balance"] != "error") && (data["balance"] > 0) && (this.data["response"] == "can activate")) {
-					this.http.get(this.host + '/myHire_driverAvailability.php?driverId=' + this.driverIdStorage + '&available=yes').subscribe(data => {
+					this.service.driverAvailability(this.driverIdStorage, 'yes').subscribe(data => {
 						// set a key/value
 						this.storage.set('driverAvailabiity', data["availability"]).then(data => {
 							this.storage.get('driverAvailabiity').then((val) => {
@@ -272,7 +271,7 @@ export class ActivatePage {
 
 	deactive() {
 		console.log("deactive");
-		this.http.get(this.host + '/myHire_driverAvailability.php?driverId=' + this.driverIdStorage + '&available=no').subscribe(data => {
+		this.service.driverAvailability(this.driverIdStorage, 'no').subscribe(data => {
 			// set a key/value
 			this.storage.set('driverAvailabiity', data["availability"]).then(data => {
 				this.storage.get('driverAvailabiity').then((val) => {
@@ -295,7 +294,7 @@ export class ActivatePage {
 
 	newHire() {
 		console.log("newHire");
-		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=no&state=new').subscribe(data => {
+		this.service.availableHire(this.driverIdStorage, 'no', 'new').subscribe(data => {
 			if ((data != null) && (Object.keys(data).length == 1)) {
 				this.navCtrl.push(ViewNewHirePage);
 			}
@@ -313,7 +312,7 @@ export class ActivatePage {
 
 	confirmedHire() {
 		console.log("confirmedHire");
-		this.http.get(this.host + '/myHire_availableHire.php?driverId=' + this.driverIdStorage + '&confirm=yes&state=confirmed').subscribe(data => {
+		this.service.availableHire(this.driverIdStorage, 'yes', 'confirmed').subscribe(data => {
 			if (this.noOfConfirmedHires > 0) { //((data != null) && (data != '0')) {
 				this.navCtrl.push(ViewConfirmedHiresPage);
 			}
@@ -432,7 +431,7 @@ export class ActivatePage {
 	}
 
 	sendDriverDetailsToPassenger(hireNo) {
-		this.http.get(this.host + '/myHire_sendPassengerRemind.php?hireNo=' + hireNo).subscribe(data => {
+		this.service.sendPassengerRemind(hireNo).subscribe(data => {
 			console.log(data);
 			let message = "You have a hire. Please be on time.";
 			this.toaster(message);
@@ -444,7 +443,7 @@ export class ActivatePage {
 	}
 
 	deleteHire(hireNo) {
-		this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + hireNo + '&driverId=' + this.driverIdStorage + '&state=delete').subscribe(data => {
+		this.service.rejectHire(hireNo, this.driverIdStorage, 'delete').subscribe(data => {
 			console.log(data);
 			this.storage.set('noOfNewHires', null);
 		},

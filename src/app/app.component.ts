@@ -4,7 +4,6 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { LocalNotifications } from '@ionic-native/local-notifications';
-import { HttpClient } from '@angular/common/http';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Storage } from '@ionic/storage';
 import 'rxjs/add/operator/filter';
@@ -14,6 +13,7 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 
 import { HomePage } from '../pages/home/home';
 import { ActivatePage } from '../pages/activate/activate';
+import { HttpServicesProvider } from '../providers/http-services/http-services';
 
 @Component({
   templateUrl: 'app.html'
@@ -22,7 +22,6 @@ export class MyApp {
   rootPage: any = HomePage;
 
   public driverId: string;
-  public host = 'http://www.my3wheel.lk/php/myHire';
   public lastUpdateTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
   public lastBack: any = Date.now();
@@ -37,7 +36,7 @@ export class MyApp {
     public toastCtrl: ToastController,
     private locationAccuracy: LocationAccuracy,
     private geolocation: Geolocation,
-    public http: HttpClient,
+    public service: HttpServicesProvider,
     public localNotifications: LocalNotifications,
     private push: Push,
 		private backgroundMode: BackgroundMode,
@@ -70,7 +69,7 @@ export class MyApp {
             let ms = moment(timestamp, "YYYY-MM-DD HH:mm:ss").diff(moment(this.lastUpdateTime, "YYYY-MM-DD HH:mm:ss"));
             if (ms >= minFrequency) {
               this.lastUpdateTime = timestamp;
-              this.http.get(this.host + '/myHire_setDriverLocation.php?driverId=' + this.driverId + '&latitude=' + latitude + '&longitude=' + longitude + '&timestamp=' + timestamp + '&isLocationOn=yes').subscribe(data => {
+              this.service.setDriverLocation(this.driverId, latitude, longitude, timestamp, 'yes').subscribe(data => {
                 console.log(data);
                 this.storage.set('isLocationOn', 'yes').then(data => {
                   this.storage.get('isLocationOn').then((val) => {
@@ -91,7 +90,7 @@ export class MyApp {
           let ms = moment(timestamp, "YYYY-MM-DD HH:mm:ss").diff(moment(this.lastUpdateTime, "YYYY-MM-DD HH:mm:ss"));
           if (ms >= minFrequency) {
             this.lastUpdateTime = timestamp;
-            this.http.get(this.host + '/myHire_setDriverLocation.php?driverId=' + this.driverId + '&latitude=0&longitude=0&timestamp=' + timestamp + '&isLocationOn=no').subscribe(data => {
+            this.service.setDriverLocation(this.driverId, 0, 0, timestamp, 'no').subscribe(data => {
               console.log(data);
               this.storage.set('isLocationOn', 'no').then(data => {
                 this.storage.get('isLocationOn').then((val) => {
@@ -119,42 +118,6 @@ export class MyApp {
       }
 
       navigator.geolocation.watchPosition(onSuccess, onError, options);
-
-      // platform.registerBackButtonAction(() => {
-
-      //   let nav = app.getActiveNavs()[0];
-      //   let activeView = nav.getActive();
-
-      //   if ((activeView.name === "ActivatePage") || (activeView.name === "HomePage")) {
-
-      //     if (nav.canGoBack()) { //Can we go back?
-      //       nav.pop();
-      //     } else {
-      //       const alert = this.alertCtrl.create({
-      //         title: 'App Termination',
-      //         subTitle: 'Do you really want to close the app?',
-      //         buttons: [{
-      //           text: 'Cancel',
-      //           role: 'cancel',
-      //           handler: () => {
-      //             console.log('Application exit prevented!');
-      //           }
-      //         }, {
-      //           text: 'Close App',
-      //           handler: () => {
-      //             //platform.exitApp(); // Close this application
-      //             this.backgroundMode.enable();
-      //             this.backgroundMode.moveToBackground();
-      //           }
-      //         }]
-      //       });
-      //       alert.present();
-      //     }
-      //   }
-      //   else {
-      //     nav.pop();
-      //   }
-      // });
 
       platform.registerBackButtonAction(() => {
         const overlay = this.app._appRoot._overlayPortal._views[0];//getActive();

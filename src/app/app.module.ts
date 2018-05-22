@@ -14,6 +14,7 @@ import { Insomnia } from '@ionic-native/insomnia';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { BackgroundMode } from '@ionic-native/background-mode';
+import { CallNumber } from '@ionic-native/call-number';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -24,6 +25,7 @@ import { ViewNewHirePage } from '../pages/view-new-hire/view-new-hire';
 import { SelectConfirmedHirePage } from '../pages/select-confirmed-hire/select-confirmed-hire';
 import { ViewConfirmedHiresPage } from '../pages/view-confirmed-hires/view-confirmed-hires';
 import { ViewRejectedMessagePage } from '../pages/view-rejected-message/view-rejected-message';
+import { HttpServicesProvider } from '../providers/http-services/http-services';
 
 @NgModule({
   declarations: [
@@ -67,7 +69,9 @@ import { ViewRejectedMessagePage } from '../pages/view-rejected-message/view-rej
     LocationAccuracy,
     Push,
     BackgroundMode,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    CallNumber,
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    HttpServicesProvider
   ]
 })
 export class AppModule {}

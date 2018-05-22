@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ViewController } from 'ionic-angular';
-import { HttpClient } from '@angular/common/http';
+import { CallNumber } from '@ionic-native/call-number';
 
 import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
 
@@ -21,10 +21,10 @@ export class SelectConfirmedHirePage {
   public hireRate: number;
 
   constructor(
+    private callNumber: CallNumber,
     public navCtrl: NavController,
     public navParams: NavParams,
-    public viewCtrl: ViewController,
-    public http: HttpClient) {
+    public viewCtrl: ViewController) {
       this.image = 'assets/imgs/logo.jpg';
       this.name = navParams.get('p_fullName');
       this.mobile = navParams.get('p_tpNumber');
@@ -49,6 +49,12 @@ export class SelectConfirmedHirePage {
     console.log('closed');
     this.navCtrl.push(ViewConfirmedHiresPage);
     //this.viewCtrl.dismiss();
+  }
+
+  getCall() {
+    this.callNumber.callNumber(this.mobile, true)
+      .then(res => console.log('Launched dialer!', res))
+      .catch(err => console.log('Error launching dialer', err));
   }
 
 }

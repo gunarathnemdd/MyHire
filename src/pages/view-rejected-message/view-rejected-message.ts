@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, AlertController, ToastController } from 'ionic-angular';
-import { HttpClient } from '@angular/common/http';
 
 import { ActivatePage } from '../activate/activate';
+import { HttpServicesProvider } from '../../providers/http-services/http-services';
 
 @Component({
   selector: 'page-view-rejected-message',
@@ -12,21 +12,20 @@ export class ViewRejectedMessagePage {
 
   public image: String;
   public hireNo: number;
-  public host = 'http://www.my3wheel.lk/php/myHire';
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public alertCtrl: AlertController,
     public toastCtrl: ToastController,
-    public http: HttpClient ) {
+    public service: HttpServicesProvider) {
     this.image = 'assets/imgs/logo.jpg';
     this.hireNo = navParams.get('hireNo');
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ViewRejectedMessagePage');
-    this.http.get(this.host + '/myHire_selectRejectedHire.php?hireNo=' + this.hireNo).subscribe(data => {
+    this.service.selectRejectedHire(this.hireNo).subscribe(data => {
       console.log(data);
       let start = data['start'];
       let end = data['end'];
