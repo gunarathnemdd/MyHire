@@ -109,7 +109,7 @@ export class ActivatePage {
 				if (!this.isNotified) {
 					this.isNotified = true;
 					this.storage.set('isNotified', true);
-					this.deactive();
+					this.deactive(false);
 				}
 			}
 			else {
@@ -189,19 +189,19 @@ export class ActivatePage {
 					let title = "You Have an Active Hire!";
 					let message = "Please accept or reject your new hire first to activate your account.";
 					this.alert(title, message);
-					this.deactive();
+					this.deactive(false);
 				}
 				else if (this.data["response"] == "passenger didn't accepted") {
 					let title = "You Have an Active Hire!";
 					let message = "Please wait while passenger accept or reject your hire rate to activate your account.";
 					this.alert(title, message);
-					this.deactive();
+					this.deactive(false);
 				}
 				else {
 					let title = "Insufficient Balance!";
 					let message = "Please recharge to activate your account.";
 					this.alert(title, message);
-					this.deactive();
+					this.deactive(false);
 				}
 			});
 		});
@@ -209,7 +209,7 @@ export class ActivatePage {
 
 	activeStateChange() {
 		if (this.state == 1) {
-			this.deactive();
+			this.deactive(true);
 		}
 		else {
 			this.active();
@@ -269,8 +269,31 @@ export class ActivatePage {
 
 	}
 
-	deactive() {
+	deactive(state) {
 		console.log("deactive");
+		if (state == false) {
+			this.deactiveProcess();
+		}
+		else {
+			let confirmAlert = this.alertCtrl.create({
+				title: "Deactivate!",
+				subTitle: "If press OK, you are no longer displaying in driver list",
+				buttons: [{
+					text: 'Cancel',
+					role: 'cancel'
+				},
+				{
+					text: 'OK',
+					handler: () => {
+						this.deactiveProcess();
+					}
+				}]
+			});
+			confirmAlert.present();
+		}
+	}
+
+	deactiveProcess() {
 		this.service.driverAvailability(this.driverIdStorage, 'no').subscribe(data => {
 			// set a key/value
 			this.storage.set('driverAvailabiity', data["availability"]).then(data => {
