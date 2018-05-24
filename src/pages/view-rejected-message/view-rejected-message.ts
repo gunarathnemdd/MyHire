@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, AlertController, ToastController } from 'ionic-angular';
+import { NavController, NavParams, AlertController } from 'ionic-angular';
 
 import { ActivatePage } from '../activate/activate';
 import { HttpServicesProvider } from '../../providers/http-services/http-services';
+import { ToastControllerProvider } from '../../providers/toast-controller/toast-controller';
 
 @Component({
   selector: 'page-view-rejected-message',
@@ -17,7 +18,7 @@ export class ViewRejectedMessagePage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public alertCtrl: AlertController,
-    public toastCtrl: ToastController,
+		public toastService: ToastControllerProvider,
     public service: HttpServicesProvider) {
     this.image = 'assets/imgs/logo.jpg';
     this.hireNo = navParams.get('hireNo');
@@ -46,16 +47,7 @@ export class ViewRejectedMessagePage {
     },
       (err) => {
         let message = "Network error! Please check your internet connection.";
-        this.toaster(message);
+        this.toastService.toastCtrlr(message);
       });
   }
-
-  toaster(message) {
-		let toast = this.toastCtrl.create({
-			message: message,
-			duration: 3000,
-			position: 'bottom'
-		});
-		toast.present();
-	}
 }

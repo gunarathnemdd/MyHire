@@ -26,6 +26,8 @@ import { SelectConfirmedHirePage } from '../pages/select-confirmed-hire/select-c
 import { ViewConfirmedHiresPage } from '../pages/view-confirmed-hires/view-confirmed-hires';
 import { ViewRejectedMessagePage } from '../pages/view-rejected-message/view-rejected-message';
 import { HttpServicesProvider } from '../providers/http-services/http-services';
+import { ToastControllerProvider } from '../providers/toast-controller/toast-controller';
+import { AlertControllerProvider } from '../providers/alert-controller/alert-controller';
 
 @NgModule({
   declarations: [
@@ -71,7 +73,9 @@ import { HttpServicesProvider } from '../providers/http-services/http-services';
     BackgroundMode,
     CallNumber,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    HttpServicesProvider
+    HttpServicesProvider,
+    ToastControllerProvider,
+    AlertControllerProvider
   ]
 })
 export class AppModule {}

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Platform, NavController, NavParams, ModalController, ToastController, AlertController } from 'ionic-angular';
+import { Platform, NavController, NavParams, ModalController, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Vibration } from '@ionic-native/vibration';
@@ -15,6 +15,7 @@ import { ViewNewHirePage } from '../view-new-hire/view-new-hire';
 import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
 import { ViewRejectedMessagePage } from '../view-rejected-message/view-rejected-message';
 import { HttpServicesProvider } from '../../providers/http-services/http-services';
+import { ToastControllerProvider } from '../../providers/toast-controller/toast-controller';
 
 @Component({
 	selector: 'page-activate',
@@ -52,7 +53,7 @@ export class ActivatePage {
 		private backgroundMode: BackgroundMode,
 		private push: Push,
 		private localNotifications: LocalNotifications,
-		public toastCtrl: ToastController,
+		public toastService: ToastControllerProvider,
 		public modalCtrl: ModalController,
 		public alertCtrl: AlertController,
 		private insomnia: Insomnia) {
@@ -127,7 +128,7 @@ export class ActivatePage {
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 	}
 
@@ -163,7 +164,7 @@ export class ActivatePage {
 									this.stateIcon = "checkmark";
 									this.state = 1;
 									let message = "You are Activated.";
-									this.toaster(message);
+									this.toastService.toastCtrlr(message);
 								}
 								else {
 									console.log('deactive');
@@ -173,7 +174,7 @@ export class ActivatePage {
 									this.stateIcon = "close";
 									this.state = 0;
 									let message = "Deactivated. Please Activate to Receive Hires.";
-									this.toaster(message);
+									this.toastService.toastCtrlr(message);
 								}
 							});
 						});
@@ -181,7 +182,7 @@ export class ActivatePage {
 					},
 						(err) => {
 							let message = "Network error!";
-							this.toaster(message);
+							this.toastService.toastCtrlr(message);
 						});
 					//this.active();
 				}
@@ -234,11 +235,11 @@ export class ActivatePage {
 						this.stateIcon = "checkmark";
 						this.state = 1;
 						let message = "You are Activated.";
-						this.toaster(message);
+						this.toastService.toastCtrlr(message);
 					},
 						(err) => {
 							let message = "Network error!";
-							this.toaster(message);
+							this.toastService.toastCtrlr(message);
 						});
 				}
 				else if (this.data["response"] == "driver didn't accepted") {
@@ -259,12 +260,12 @@ export class ActivatePage {
 			},
 				(err) => {
 					let message = "Network error! Please check your internet connection.";
-					this.toaster(message);
+					this.toastService.toastCtrlr(message);
 				});
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 
 	}
@@ -307,11 +308,11 @@ export class ActivatePage {
 			this.stateIcon = "close";
 			this.state = 0;
 			let message = "Deactivated. Please Activate to Receive Hires.";
-			this.toaster(message);
+			this.toastService.toastCtrlr(message);
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 	}
 
@@ -329,7 +330,7 @@ export class ActivatePage {
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 	}
 
@@ -347,22 +348,13 @@ export class ActivatePage {
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 	}
 
 	pay() {
 		console.log("pay");
 		this.navCtrl.push(PayPage);
-	}
-
-	toaster(message) {
-		let toast = this.toastCtrl.create({
-			message: message,
-			duration: 3000,
-			position: 'bottom'
-		});
-		toast.present();
 	}
 
 	alert(title, message) {
@@ -457,11 +449,11 @@ export class ActivatePage {
 		this.service.sendPassengerRemind(hireNo).subscribe(data => {
 			console.log(data);
 			let message = "You have a hire. Please be on time.";
-			this.toaster(message);
+			this.toastService.toastCtrlr(message);
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 	}
 
@@ -472,7 +464,7 @@ export class ActivatePage {
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 	}
 

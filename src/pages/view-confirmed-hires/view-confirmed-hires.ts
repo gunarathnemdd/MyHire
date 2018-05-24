@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ModalController, ToastController } from 'ionic-angular';
+import { NavController, NavParams, ModalController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { orderBy, filter } from 'lodash';
 import moment from 'moment';
@@ -7,6 +7,7 @@ import moment from 'moment';
 import { ActivatePage } from '../activate/activate';
 import { SelectConfirmedHirePage } from '../select-confirmed-hire/select-confirmed-hire';
 import { HttpServicesProvider } from '../../providers/http-services/http-services';
+import { ToastControllerProvider } from '../../providers/toast-controller/toast-controller';
 
 @Component({
   selector: 'page-view-confirmed-hires',
@@ -23,7 +24,7 @@ export class ViewConfirmedHiresPage {
     public navParams: NavParams,
     private storage: Storage,
     public service: HttpServicesProvider,
-    public toastCtrl: ToastController,
+		public toastService: ToastControllerProvider,
     public modalCtrl: ModalController) {
     this.image = 'assets/imgs/logo.jpg';
   }
@@ -48,7 +49,7 @@ export class ViewConfirmedHiresPage {
       },
         (err) => {
           let message = "Network error! Please check your internet connection.";
-          this.toaster(message);
+          this.toastService.toastCtrlr(message);
         });
     });
   }
@@ -61,15 +62,6 @@ export class ViewConfirmedHiresPage {
     console.log(item);
     let profileModal = this.modalCtrl.create(SelectConfirmedHirePage, item);
     profileModal.present();
-  }
-
-  toaster(message) {
-    let toast = this.toastCtrl.create({
-      message: message,
-      duration: 3000,
-      position: 'bottom'
-    });
-    toast.present();
   }
 
 }
