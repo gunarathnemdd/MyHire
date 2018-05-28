@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { App, Platform, AlertController, ToastController } from 'ionic-angular';
+import { App, Platform, ToastController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
@@ -14,6 +14,7 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 import { HomePage } from '../pages/home/home';
 import { ActivatePage } from '../pages/activate/activate';
 import { HttpServicesProvider } from '../providers/http-services/http-services';
+import { AlertControllerProvider } from '../providers/alert-controller/alert-controller';
 
 @Component({
   templateUrl: 'app.html'
@@ -39,9 +40,9 @@ export class MyApp {
     public service: HttpServicesProvider,
     public localNotifications: LocalNotifications,
     private push: Push,
-		private backgroundMode: BackgroundMode,
+    private backgroundMode: BackgroundMode,
     private storage: Storage,
-    public alertCtrl: AlertController) {
+    public alertService: AlertControllerProvider) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -98,17 +99,10 @@ export class MyApp {
                 });
               });
             });
-            let alert = this.alertCtrl.create({
-              title: 'Confirm',
-              subTitle: 'Please turn on your device location to visible your vehicle to passengers',
-              buttons: [
-                {
-                  text: 'OK',
-                  role: 'cancel'
-                }
-              ]
-            });
-            alert.present();
+            let title = "Confirm";
+            let message = "Please turn on your device location to visible your vehicle to passengers";
+            let buttons = [{ text: 'OK', role: 'cancel' }];
+            this.alertService.alertCtrlr(title, message, buttons);
           }
         }
       }
