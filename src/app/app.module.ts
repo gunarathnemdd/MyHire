@@ -15,6 +15,7 @@ import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { BackgroundMode } from '@ionic-native/background-mode';
 import { CallNumber } from '@ionic-native/call-number';
+import { AppVersion } from '@ionic-native/app-version';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -26,6 +27,8 @@ import { SelectConfirmedHirePage } from '../pages/select-confirmed-hire/select-c
 import { ViewConfirmedHiresPage } from '../pages/view-confirmed-hires/view-confirmed-hires';
 import { ViewRejectedMessagePage } from '../pages/view-rejected-message/view-rejected-message';
 import { HttpServicesProvider } from '../providers/http-services/http-services';
+import { ToastControllerProvider } from '../providers/toast-controller/toast-controller';
+import { AlertControllerProvider } from '../providers/alert-controller/alert-controller';
 
 @NgModule({
   declarations: [
@@ -70,8 +73,11 @@ import { HttpServicesProvider } from '../providers/http-services/http-services';
     Push,
     BackgroundMode,
     CallNumber,
+    AppVersion,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    HttpServicesProvider
+    HttpServicesProvider,
+    ToastControllerProvider,
+    AlertControllerProvider
   ]
 })
 export class AppModule {}

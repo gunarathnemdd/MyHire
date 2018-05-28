@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController, ViewController } from 'ionic-angular';
+import { NavController, NavParams, ViewController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 
 import { ActivatePage } from '../activate/activate';
 import { HttpServicesProvider } from '../../providers/http-services/http-services';
+import { ToastControllerProvider } from '../../providers/toast-controller/toast-controller';
 
 @Component({
   selector: 'page-pay',
@@ -25,7 +26,7 @@ export class PayPage {
     public service: HttpServicesProvider,
     public navParams: NavParams,
     private storage: Storage,
-    public toastCtrl: ToastController,
+		public toastService: ToastControllerProvider,
     public viewCtrl: ViewController) {
       this.image = 'assets/imgs/logo.jpg';
       this.recharge = new FormGroup({
@@ -50,7 +51,7 @@ export class PayPage {
       },
       (err) => {
         let message = "Network error! Please check your internet connection.";
-        this.toaster(message);
+        this.toastService.toastCtrlr(message);
       });
     });
   }
@@ -70,44 +71,35 @@ export class PayPage {
         if(data["response"] == "success") {
           this.navCtrl.setRoot(ActivatePage);
           let message = "Your Payment is Successful. Now You Can Activate.";
-          this.toaster(message);
+          this.toastService.toastCtrlr(message);
         }
         else if(data["response"] == "invalid driverId") {
           let message = "Network Error!";
-          this.toaster(message);
+          this.toastService.toastCtrlr(message);
         }
         else if(data["response"] == "already used") {
           let message = "Recharge Card is Already Used. Please Try Another One.";
-          this.toaster(message);
+          this.toastService.toastCtrlr(message);
         }
         else if(data["response"] == "not valid") {
           let message = "Recharge Card is not a Valid Card. Please Try Another One and Contact Service Provider.";
-          this.toaster(message);
+          this.toastService.toastCtrlr(message);
         }
         else {
           let message = "Network Error!";
-          this.toaster(message);
+          this.toastService.toastCtrlr(message);
         }
         console.log(data["response"]);
       },
       (err) => {
         let message = "Network error! Please check your internet connection.";
-        this.toaster(message);
+        this.toastService.toastCtrlr(message);
       });
     }
     else {
       let message = "This is a required field. Please only enter numbers.";
-      this.toaster(message);
+      this.toastService.toastCtrlr(message);
     }
-  }
-
-  toaster(message) {
-    let toast = this.toastCtrl.create({
-      message: message,
-      duration: 3000,
-      position: 'bottom'
-    });
-    toast.present();
   }
 
 }

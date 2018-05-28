@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ModalController, AlertController, ToastController, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, ModalController, AlertController, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { BackgroundMode } from '@ionic-native/background-mode';
@@ -7,6 +7,7 @@ import { BackgroundMode } from '@ionic-native/background-mode';
 import { ActivatePage } from '../activate/activate';
 import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
 import { HttpServicesProvider } from '../../providers/http-services/http-services';
+import { ToastControllerProvider } from '../../providers/toast-controller/toast-controller';
 
 @Component({
   selector: 'page-view-new-hire',
@@ -34,7 +35,7 @@ export class ViewNewHirePage {
     private backgroundMode: BackgroundMode,
     public modalCtrl: ModalController,
     public alertCtrl: AlertController,
-    public toastCtrl: ToastController) {
+		public toastService: ToastControllerProvider) {
     this.image = 'assets/imgs/logo.jpg';
   }
 
@@ -56,7 +57,7 @@ export class ViewNewHirePage {
       },
         (err) => {
           let message = "Network error! Please check your internet connection.";
-          this.toaster(message);
+          this.toastService.toastCtrlr(message);
         });
     });
   }
@@ -106,12 +107,12 @@ export class ViewNewHirePage {
               },
                 (err) => {
                   let message = "Network error! Please check your internet connection.";
-                  this.toaster(message);
+                  this.toastService.toastCtrlr(message);
                 });
             }
             else {
               let message = 'This is a required field. Please only enter numbers.';
-              this.toaster(message);
+              this.toastService.toastCtrlr(message);
               return false;
             }
           }
@@ -121,19 +122,11 @@ export class ViewNewHirePage {
     alert.present();
   }
 
-  toaster(message) {
-    let toast = this.toastCtrl.create({
-      message: message,
-      duration: 3000,
-      position: 'bottom'
-    });
-    toast.present();
-  }
-
   balanceWarning(hireNo, driverId, hireRate) {
     let alert = this.alertCtrl.create({
       title: 'Insufficient Balance!',
       subTitle: 'Press OK button to take this hire and your balance get minus balance. To get another hire, you have to recharge your account. Otherwise press No to rejeact this hire.',
+      enableBackdropDismiss: false,
       buttons: [
         {
           text: 'Cancel',
@@ -160,6 +153,7 @@ export class ViewNewHirePage {
     let alert = this.alertCtrl.create({
       title: 'Delete',
       subTitle: 'Are you sure to cancel this hire?',
+      enableBackdropDismiss: false,
       buttons: [
         {
           text: 'No',
@@ -182,7 +176,7 @@ export class ViewNewHirePage {
       this.storage.set('noOfNewHires', null);
       if (data["response"] == "confirmed") {
         let message = "Please wait for the passenger's response";
-        this.toaster(message);
+        this.toastService.toastCtrlr(message);
         this.navCtrl.setRoot(ActivatePage, {
           backgroundMode: 'on'
         });
@@ -191,7 +185,8 @@ export class ViewNewHirePage {
       else if (data['response'] == 'already deleted') {
         this.storage.set('noOfNewHires', null);
         this.navCtrl.setRoot(ActivatePage);
-        this.toaster("Hire is already deleted due to time out.");
+        let message = "Hire is already deleted due to time out.";
+        this.toastService.toastCtrlr(message);
       }
       else {
         this.rejectHire(hireNo, driverId, 'reject', 'Network error! Please check your internet connection.');
@@ -200,7 +195,7 @@ export class ViewNewHirePage {
       (err) => {
         this.navCtrl.setRoot(ActivatePage);
         let message = "Network error! Please check your internet connection.";
-        this.toaster(message);
+        this.toastService.toastCtrlr(message);
       });
   }
 
@@ -211,22 +206,23 @@ export class ViewNewHirePage {
         if (data['response'] == 'deleted') {
           this.storage.set('noOfNewHires', null);
           this.navCtrl.setRoot(ActivatePage);
-          this.toaster(message);
+          this.toastService.toastCtrlr(message);
         }
         else if (data['response'] == 'already deleted') {
           this.storage.set('noOfNewHires', null);
           this.navCtrl.setRoot(ActivatePage);
-          this.toaster("Hire is already deeted due to time out.");
+          let message2 = "Hire is already deeted due to time out.";
+          this.toastService.toastCtrlr(message2);
         }
         else {
           this.navCtrl.setRoot(ActivatePage);
           let message2 = "Network error! Please check your internet connection.";
-          this.toaster(message2);
+          this.toastService.toastCtrlr(message2);
         }
       },
         (err) => {
           let message2 = "Network error! Please check your internet connection.";
-          this.toaster(message2);
+          this.toastService.toastCtrlr(message2);
         });
     }
     else {
@@ -236,7 +232,7 @@ export class ViewNewHirePage {
       },
         (err) => {
           let message2 = "Network error! Please check your internet connection.";
-          this.toaster(message2);
+          this.toastService.toastCtrlr(message2);
         });
     }
   }
@@ -260,7 +256,7 @@ export class ViewNewHirePage {
           (err) => {
             clearTimeout(this.pushTimeOut);
             let message = "Network error! Please check your internet connection.";
-            this.toaster(message);
+            this.toastService.toastCtrlr(message);
           });
       }, 60000);
     });

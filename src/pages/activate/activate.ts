@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Platform, NavController, NavParams, ModalController, ToastController, AlertController } from 'ionic-angular';
+import { Platform, NavController, NavParams, ModalController, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Vibration } from '@ionic-native/vibration';
@@ -15,6 +15,8 @@ import { ViewNewHirePage } from '../view-new-hire/view-new-hire';
 import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
 import { ViewRejectedMessagePage } from '../view-rejected-message/view-rejected-message';
 import { HttpServicesProvider } from '../../providers/http-services/http-services';
+import { ToastControllerProvider } from '../../providers/toast-controller/toast-controller';
+import { AlertControllerProvider } from '../../providers/alert-controller/alert-controller';
 
 @Component({
 	selector: 'page-activate',
@@ -40,6 +42,7 @@ export class ActivatePage {
 	public hireNo: any;
 	public pushTimeOut: any;
 	public isBackgroundMode: any;
+	public version: any;
 
 	constructor(
 		public platform: Platform,
@@ -52,7 +55,8 @@ export class ActivatePage {
 		private backgroundMode: BackgroundMode,
 		private push: Push,
 		private localNotifications: LocalNotifications,
-		public toastCtrl: ToastController,
+		public toastService: ToastControllerProvider,
+		public alertService: AlertControllerProvider,
 		public modalCtrl: ModalController,
 		public alertCtrl: AlertController,
 		private insomnia: Insomnia) {
@@ -78,6 +82,7 @@ export class ActivatePage {
 					else if (key == "intervalID") { this.intervalId = value; }
 					else if (key == "noOfNewHires") { this.noOfNewHires = value; }
 					else if (key == "isNotified") { this.isNotified = value; }
+					else if (key == "version") { this.version = value; }
 				}).then(() => {
 					clearInterval(this.intervalId);
 					console.log('driverId: ', this.driverIdStorage);
@@ -86,11 +91,27 @@ export class ActivatePage {
 					if (this.isBackgroundMode != 'on') {
 						this.getActiveState();
 					}
+					if (this.version == "old") {
+						this.update();
+					}
 				}),
 			() => {
 				this.fallAsleep();
 			}
 		)
+	}
+
+	update() {
+		let confirmAlert = this.alertCtrl.create({
+			title: "Update!",
+			subTitle: "This app has a new version. Please uninstall this app and visit 'http://www.my3wheel.lk' then install new version.",
+			enableBackdropDismiss: false,
+			buttons: [{
+				text: 'OK',
+				role: 'cancel'
+			}]
+		});
+		confirmAlert.present();
 	}
 
 	fallAsleep() {
@@ -109,7 +130,7 @@ export class ActivatePage {
 				if (!this.isNotified) {
 					this.isNotified = true;
 					this.storage.set('isNotified', true);
-					this.deactive();
+					this.deactive(false);
 				}
 			}
 			else {
@@ -127,7 +148,7 @@ export class ActivatePage {
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 	}
 
@@ -163,7 +184,7 @@ export class ActivatePage {
 									this.stateIcon = "checkmark";
 									this.state = 1;
 									let message = "You are Activated.";
-									this.toaster(message);
+									this.toastService.toastCtrlr(message);
 								}
 								else {
 									console.log('deactive');
@@ -173,7 +194,7 @@ export class ActivatePage {
 									this.stateIcon = "close";
 									this.state = 0;
 									let message = "Deactivated. Please Activate to Receive Hires.";
-									this.toaster(message);
+									this.toastService.toastCtrlr(message);
 								}
 							});
 						});
@@ -181,27 +202,30 @@ export class ActivatePage {
 					},
 						(err) => {
 							let message = "Network error!";
-							this.toaster(message);
+							this.toastService.toastCtrlr(message);
 						});
 					//this.active();
 				}
 				else if (this.data["response"] == "driver didn't accepted") {
 					let title = "You Have an Active Hire!";
 					let message = "Please accept or reject your new hire first to activate your account.";
-					this.alert(title, message);
-					this.deactive();
+					let buttons = [{ text: 'OK', role: 'cancel' }];
+					this.alertService.alertCtrlr(title, message, buttons);
+					this.deactive(false);
 				}
 				else if (this.data["response"] == "passenger didn't accepted") {
 					let title = "You Have an Active Hire!";
 					let message = "Please wait while passenger accept or reject your hire rate to activate your account.";
-					this.alert(title, message);
-					this.deactive();
+					let buttons = [{ text: 'OK', role: 'cancel' }];
+					this.alertService.alertCtrlr(title, message, buttons);
+					this.deactive(false);
 				}
 				else {
 					let title = "Insufficient Balance!";
 					let message = "Please recharge to activate your account.";
-					this.alert(title, message);
-					this.deactive();
+					let buttons = [{ text: 'OK', role: 'cancel' }];
+					this.alertService.alertCtrlr(title, message, buttons);
+					this.deactive(false);
 				}
 			});
 		});
@@ -209,7 +233,7 @@ export class ActivatePage {
 
 	activeStateChange() {
 		if (this.state == 1) {
-			this.deactive();
+			this.deactive(true);
 		}
 		else {
 			this.active();
@@ -234,43 +258,70 @@ export class ActivatePage {
 						this.stateIcon = "checkmark";
 						this.state = 1;
 						let message = "You are Activated.";
-						this.toaster(message);
+						this.toastService.toastCtrlr(message);
 					},
 						(err) => {
 							let message = "Network error!";
-							this.toaster(message);
+							this.toastService.toastCtrlr(message);
 						});
 				}
 				else if (this.data["response"] == "driver didn't accepted") {
 					let title = "You Have an Active Hire!";
 					let message = "Please accept or reject your new hire first to activate your account.";
-					this.alert(title, message);
+					let buttons = [{ text: 'OK', role: 'cancel' }];
+					this.alertService.alertCtrlr(title, message, buttons);
 				}
 				else if (this.data["response"] == "passenger didn't accepted") {
 					let title = "You Have an Active Hire!";
 					let message = "Please wait while passenger accept or reject your hire rate to activate your account.";
-					this.alert(title, message);
+					let buttons = [{ text: 'OK', role: 'cancel' }];
+					this.alertService.alertCtrlr(title, message, buttons);
 				}
 				else {
 					let title = "Insufficient Balance!";
 					let message = "Please recharge to activate your account.";
-					this.alert(title, message);
+					let buttons = [{ text: 'OK', role: 'cancel' }];
+					this.alertService.alertCtrlr(title, message, buttons);
 				}
 			},
 				(err) => {
 					let message = "Network error! Please check your internet connection.";
-					this.toaster(message);
+					this.toastService.toastCtrlr(message);
 				});
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 
 	}
 
-	deactive() {
+	deactive(state) {
 		console.log("deactive");
+		if (state == false) {
+			this.deactiveProcess();
+		}
+		else {
+			let confirmAlert = this.alertCtrl.create({
+				title: "Deactivate!",
+				subTitle: "If press OK, you are no longer displaying in driver list",
+				enableBackdropDismiss: false,
+				buttons: [{
+					text: 'Cancel',
+					role: 'cancel'
+				},
+				{
+					text: 'OK',
+					handler: () => {
+						this.deactiveProcess();
+					}
+				}]
+			});
+			confirmAlert.present();
+		}
+	}
+
+	deactiveProcess() {
 		this.service.driverAvailability(this.driverIdStorage, 'no').subscribe(data => {
 			// set a key/value
 			this.storage.set('driverAvailabiity', data["availability"]).then(data => {
@@ -284,11 +335,11 @@ export class ActivatePage {
 			this.stateIcon = "close";
 			this.state = 0;
 			let message = "Deactivated. Please Activate to Receive Hires.";
-			this.toaster(message);
+			this.toastService.toastCtrlr(message);
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 	}
 
@@ -301,12 +352,13 @@ export class ActivatePage {
 			else {
 				let title = "No New Hires!";
 				let message = "You don't have a new hire at this moment.";
-				this.alert(title, message);
+				let buttons = [{ text: 'OK', role: 'cancel' }];
+				this.alertService.alertCtrlr(title, message, buttons);
 			}
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 	}
 
@@ -319,42 +371,19 @@ export class ActivatePage {
 			else {
 				let title = "No Confirmed Hires!";
 				let message = "You don't have any confirmed hires at this moment.";
-				this.alert(title, message);
+				let buttons = [{ text: 'OK', role: 'cancel' }];
+				this.alertService.alertCtrlr(title, message, buttons);
 			}
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 	}
 
 	pay() {
 		console.log("pay");
 		this.navCtrl.push(PayPage);
-	}
-
-	toaster(message) {
-		let toast = this.toastCtrl.create({
-			message: message,
-			duration: 3000,
-			position: 'bottom'
-		});
-		toast.present();
-	}
-
-	alert(title, message) {
-		let alert = this.alertCtrl.create({
-			title: title,
-			subTitle: message,
-			enableBackdropDismiss: false,
-			buttons: [
-				{
-					text: 'OK',
-					role: 'cancel'
-				}
-			]
-		});
-		alert.present();
 	}
 
 	initPushNotification() {
@@ -385,6 +414,7 @@ export class ActivatePage {
 				let confirmAlert = this.alertCtrl.create({
 					title: data.title,
 					subTitle: data.message,
+					enableBackdropDismiss: false,
 					buttons: [{
 						text: 'View',
 						handler: () => {
@@ -434,11 +464,11 @@ export class ActivatePage {
 		this.service.sendPassengerRemind(hireNo).subscribe(data => {
 			console.log(data);
 			let message = "You have a hire. Please be on time.";
-			this.toaster(message);
+			this.toastService.toastCtrlr(message);
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 	}
 
@@ -449,7 +479,7 @@ export class ActivatePage {
 		},
 			(err) => {
 				let message = "Network error! Please check your internet connection.";
-				this.toaster(message);
+				this.toastService.toastCtrlr(message);
 			});
 	}
 

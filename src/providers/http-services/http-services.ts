@@ -7,9 +7,14 @@ export class HttpServicesProvider {
 
   public host = 'http://www.my3wheel.lk/php/myHire';
   public host2 = 'http://www.my3wheel.lk/php/my3Wheel';
+  public host3 = 'http://www.my3wheel.lk/php/common';
 
   constructor(public http: HttpClient) {
     console.log('Hello HttpServicesProvider Provider');
+  }
+
+  versionCompare(appName) {
+    return this.http.get(this.host3 + '/common_versionCompare.php?appName=' + appName);
   }
 
   login(driverId) {
