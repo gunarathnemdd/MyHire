@@ -16,6 +16,7 @@ import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-h
 import { ViewRejectedMessagePage } from '../view-rejected-message/view-rejected-message';
 import { HttpServicesProvider } from '../../providers/http-services/http-services';
 import { ToastControllerProvider } from '../../providers/toast-controller/toast-controller';
+import { AlertControllerProvider } from '../../providers/alert-controller/alert-controller';
 
 @Component({
 	selector: 'page-activate',
@@ -54,6 +55,7 @@ export class ActivatePage {
 		private push: Push,
 		private localNotifications: LocalNotifications,
 		public toastService: ToastControllerProvider,
+		public alertService: AlertControllerProvider,
 		public modalCtrl: ModalController,
 		public alertCtrl: AlertController,
 		private insomnia: Insomnia) {
@@ -189,19 +191,22 @@ export class ActivatePage {
 				else if (this.data["response"] == "driver didn't accepted") {
 					let title = "You Have an Active Hire!";
 					let message = "Please accept or reject your new hire first to activate your account.";
-					this.alert(title, message);
+					let buttons = [{ text: 'OK', role: 'cancel' }];
+          this.alertService.alertCtrlr(title, message, buttons);
 					this.deactive(false);
 				}
 				else if (this.data["response"] == "passenger didn't accepted") {
 					let title = "You Have an Active Hire!";
 					let message = "Please wait while passenger accept or reject your hire rate to activate your account.";
-					this.alert(title, message);
+					let buttons = [{ text: 'OK', role: 'cancel' }];
+          this.alertService.alertCtrlr(title, message, buttons);
 					this.deactive(false);
 				}
 				else {
 					let title = "Insufficient Balance!";
 					let message = "Please recharge to activate your account.";
-					this.alert(title, message);
+					let buttons = [{ text: 'OK', role: 'cancel' }];
+          this.alertService.alertCtrlr(title, message, buttons);
 					this.deactive(false);
 				}
 			});
@@ -245,17 +250,20 @@ export class ActivatePage {
 				else if (this.data["response"] == "driver didn't accepted") {
 					let title = "You Have an Active Hire!";
 					let message = "Please accept or reject your new hire first to activate your account.";
-					this.alert(title, message);
+					let buttons = [{ text: 'OK', role: 'cancel' }];
+          this.alertService.alertCtrlr(title, message, buttons);
 				}
 				else if (this.data["response"] == "passenger didn't accepted") {
 					let title = "You Have an Active Hire!";
 					let message = "Please wait while passenger accept or reject your hire rate to activate your account.";
-					this.alert(title, message);
+					let buttons = [{ text: 'OK', role: 'cancel' }];
+          this.alertService.alertCtrlr(title, message, buttons);
 				}
 				else {
 					let title = "Insufficient Balance!";
 					let message = "Please recharge to activate your account.";
-					this.alert(title, message);
+					let buttons = [{ text: 'OK', role: 'cancel' }];
+          this.alertService.alertCtrlr(title, message, buttons);
 				}
 			},
 				(err) => {
@@ -325,7 +333,8 @@ export class ActivatePage {
 			else {
 				let title = "No New Hires!";
 				let message = "You don't have a new hire at this moment.";
-				this.alert(title, message);
+				let buttons = [{ text: 'OK', role: 'cancel' }];
+          this.alertService.alertCtrlr(title, message, buttons);
 			}
 		},
 			(err) => {
@@ -343,7 +352,8 @@ export class ActivatePage {
 			else {
 				let title = "No Confirmed Hires!";
 				let message = "You don't have any confirmed hires at this moment.";
-				this.alert(title, message);
+				let buttons = [{ text: 'OK', role: 'cancel' }];
+          this.alertService.alertCtrlr(title, message, buttons);
 			}
 		},
 			(err) => {
@@ -355,21 +365,6 @@ export class ActivatePage {
 	pay() {
 		console.log("pay");
 		this.navCtrl.push(PayPage);
-	}
-
-	alert(title, message) {
-		let alert = this.alertCtrl.create({
-			title: title,
-			subTitle: message,
-			enableBackdropDismiss: false,
-			buttons: [
-				{
-					text: 'OK',
-					role: 'cancel'
-				}
-			]
-		});
-		alert.present();
 	}
 
 	initPushNotification() {
