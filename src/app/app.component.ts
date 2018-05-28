@@ -10,11 +10,14 @@ import 'rxjs/add/operator/filter';
 import moment from 'moment';
 import { Geolocation } from '@ionic-native/geolocation';
 import { BackgroundMode } from '@ionic-native/background-mode';
+import { AppVersion } from '@ionic-native/app-version';
+import compareVersions from "compare-versions";
 
 import { HomePage } from '../pages/home/home';
 import { ActivatePage } from '../pages/activate/activate';
 import { HttpServicesProvider } from '../providers/http-services/http-services';
 import { AlertControllerProvider } from '../providers/alert-controller/alert-controller';
+import { ToastControllerProvider } from '../providers/toast-controller/toast-controller';
 
 @Component({
   templateUrl: 'app.html'
@@ -35,10 +38,12 @@ export class MyApp {
     splashScreen: SplashScreen,
     public app: App,
     public toastCtrl: ToastController,
+    private appVersion: AppVersion,
     private locationAccuracy: LocationAccuracy,
     private geolocation: Geolocation,
     public service: HttpServicesProvider,
     public localNotifications: LocalNotifications,
+    public toastService: ToastControllerProvider,
     private push: Push,
     private backgroundMode: BackgroundMode,
     private storage: Storage,
@@ -57,6 +62,22 @@ export class MyApp {
             error => console.log('Error requesting location permissions', error)
           );
         }
+      });
+
+      this.service.versionCompare("MyHire").subscribe(data => {
+        let serverVersion = data['versionNo'];
+        this.appVersion.getVersionNumber().then((myAppVersion) => {
+          if (compareVersions(myAppVersion, serverVersion) == -1) {
+            this.storage.set('version', "old");
+          }
+          else {
+            this.storage.set('version', "latest");
+          }
+        },
+          (err) => {
+            let message = "Network error! Please check your internet connection.";
+            this.toastService.toastCtrlr(message);
+          });
       });
 
       let onSuccess = (position) => {

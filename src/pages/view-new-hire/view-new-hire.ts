@@ -126,6 +126,7 @@ export class ViewNewHirePage {
     let alert = this.alertCtrl.create({
       title: 'Insufficient Balance!',
       subTitle: 'Press OK button to take this hire and your balance get minus balance. To get another hire, you have to recharge your account. Otherwise press No to rejeact this hire.',
+      enableBackdropDismiss: false,
       buttons: [
         {
           text: 'Cancel',
@@ -152,6 +153,7 @@ export class ViewNewHirePage {
     let alert = this.alertCtrl.create({
       title: 'Delete',
       subTitle: 'Are you sure to cancel this hire?',
+      enableBackdropDismiss: false,
       buttons: [
         {
           text: 'No',

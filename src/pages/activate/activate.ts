@@ -42,6 +42,7 @@ export class ActivatePage {
 	public hireNo: any;
 	public pushTimeOut: any;
 	public isBackgroundMode: any;
+	public version: any;
 
 	constructor(
 		public platform: Platform,
@@ -81,6 +82,7 @@ export class ActivatePage {
 					else if (key == "intervalID") { this.intervalId = value; }
 					else if (key == "noOfNewHires") { this.noOfNewHires = value; }
 					else if (key == "isNotified") { this.isNotified = value; }
+					else if (key == "version") { this.version = value; }
 				}).then(() => {
 					clearInterval(this.intervalId);
 					console.log('driverId: ', this.driverIdStorage);
@@ -89,11 +91,27 @@ export class ActivatePage {
 					if (this.isBackgroundMode != 'on') {
 						this.getActiveState();
 					}
+					if (this.version == "old") {
+						this.update();
+					}
 				}),
 			() => {
 				this.fallAsleep();
 			}
 		)
+	}
+
+	update() {
+		let confirmAlert = this.alertCtrl.create({
+			title: "Update!",
+			subTitle: "This app has a new version. Please uninstall this app and visit 'http://www.my3wheel.lk' then install new version.",
+			enableBackdropDismiss: false,
+			buttons: [{
+				text: 'OK',
+				role: 'cancel'
+			}]
+		});
+		confirmAlert.present();
 	}
 
 	fallAsleep() {
@@ -192,21 +210,21 @@ export class ActivatePage {
 					let title = "You Have an Active Hire!";
 					let message = "Please accept or reject your new hire first to activate your account.";
 					let buttons = [{ text: 'OK', role: 'cancel' }];
-          this.alertService.alertCtrlr(title, message, buttons);
+					this.alertService.alertCtrlr(title, message, buttons);
 					this.deactive(false);
 				}
 				else if (this.data["response"] == "passenger didn't accepted") {
 					let title = "You Have an Active Hire!";
 					let message = "Please wait while passenger accept or reject your hire rate to activate your account.";
 					let buttons = [{ text: 'OK', role: 'cancel' }];
-          this.alertService.alertCtrlr(title, message, buttons);
+					this.alertService.alertCtrlr(title, message, buttons);
 					this.deactive(false);
 				}
 				else {
 					let title = "Insufficient Balance!";
 					let message = "Please recharge to activate your account.";
 					let buttons = [{ text: 'OK', role: 'cancel' }];
-          this.alertService.alertCtrlr(title, message, buttons);
+					this.alertService.alertCtrlr(title, message, buttons);
 					this.deactive(false);
 				}
 			});
@@ -251,19 +269,19 @@ export class ActivatePage {
 					let title = "You Have an Active Hire!";
 					let message = "Please accept or reject your new hire first to activate your account.";
 					let buttons = [{ text: 'OK', role: 'cancel' }];
-          this.alertService.alertCtrlr(title, message, buttons);
+					this.alertService.alertCtrlr(title, message, buttons);
 				}
 				else if (this.data["response"] == "passenger didn't accepted") {
 					let title = "You Have an Active Hire!";
 					let message = "Please wait while passenger accept or reject your hire rate to activate your account.";
 					let buttons = [{ text: 'OK', role: 'cancel' }];
-          this.alertService.alertCtrlr(title, message, buttons);
+					this.alertService.alertCtrlr(title, message, buttons);
 				}
 				else {
 					let title = "Insufficient Balance!";
 					let message = "Please recharge to activate your account.";
 					let buttons = [{ text: 'OK', role: 'cancel' }];
-          this.alertService.alertCtrlr(title, message, buttons);
+					this.alertService.alertCtrlr(title, message, buttons);
 				}
 			},
 				(err) => {
@@ -287,6 +305,7 @@ export class ActivatePage {
 			let confirmAlert = this.alertCtrl.create({
 				title: "Deactivate!",
 				subTitle: "If press OK, you are no longer displaying in driver list",
+				enableBackdropDismiss: false,
 				buttons: [{
 					text: 'Cancel',
 					role: 'cancel'
@@ -334,7 +353,7 @@ export class ActivatePage {
 				let title = "No New Hires!";
 				let message = "You don't have a new hire at this moment.";
 				let buttons = [{ text: 'OK', role: 'cancel' }];
-          this.alertService.alertCtrlr(title, message, buttons);
+				this.alertService.alertCtrlr(title, message, buttons);
 			}
 		},
 			(err) => {
@@ -353,7 +372,7 @@ export class ActivatePage {
 				let title = "No Confirmed Hires!";
 				let message = "You don't have any confirmed hires at this moment.";
 				let buttons = [{ text: 'OK', role: 'cancel' }];
-          this.alertService.alertCtrlr(title, message, buttons);
+				this.alertService.alertCtrlr(title, message, buttons);
 			}
 		},
 			(err) => {
@@ -395,6 +414,7 @@ export class ActivatePage {
 				let confirmAlert = this.alertCtrl.create({
 					title: data.title,
 					subTitle: data.message,
+					enableBackdropDismiss: false,
 					buttons: [{
 						text: 'View',
 						handler: () => {
