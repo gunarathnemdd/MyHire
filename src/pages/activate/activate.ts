@@ -204,7 +204,7 @@ export class ActivatePage {
 							let message = "Network error!";
 							this.toastService.toastCtrlr(message);
 						});
-					//this.active();
+					//this.active(); 
 				}
 				else if (this.data["response"] == "driver didn't accepted") {
 					let title = "You Have an Active Hire!";
