@@ -11,7 +11,7 @@ export class ToastControllerProvider {
   toastCtrlr(message: string) {
     let toast = this.toastCtrl.create({
 			message: message,
-			duration: 3000,
+			duration: 5000,
 			position: 'bottom'
 		});
 		toast.present();
