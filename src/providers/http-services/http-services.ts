@@ -6,15 +6,10 @@ import 'rxjs/add/operator/map';
 export class HttpServicesProvider {
 
   public host = 'http://www.my3wheel.lk/php/myHire';
-  public host2 = 'http://www.my3wheel.lk/php/my3Wheel';
-  public host3 = 'http://www.my3wheel.lk/php/common';
+  public host2 = 'http://www.my3wheel.lk/php/common';
 
   constructor(public http: HttpClient) {
     console.log('Hello HttpServicesProvider Provider');
-  }
-
-  versionCompare(appName) {
-    return this.http.get(this.host3 + '/common_versionCompare.php?appName=' + appName);
   }
 
   login(driverId) {
@@ -50,15 +45,15 @@ export class HttpServicesProvider {
   }
 
   rejectHire(hireNo, driverId, state) {
-    return this.http.get(this.host + '/myHire_rejectHire.php?hireNo=' + hireNo + '&driverId=' + driverId + '&state=' + state);
+    return this.http.get(this.host2 + '/common_rejectHire.php?hireNo=' + hireNo + '&driverId=' + driverId + '&state=' + state);
   }
 
   riderReject(hireNo, driverId, state) {
-    return this.http.get(this.host2 + '/my3Wheel_riderReject.php?hireNo=' + hireNo + '&driverId=' + driverId + '&state=' + state);
+    return this.http.get(this.host2 + '/common_riderReject.php?hireNo=' + hireNo + '&driverId=' + driverId + '&state=' + state);
   }
 
   deleteTimeOutHires(hireNo, state) {
-    return this.http.get(this.host + '/myHire_deleteTimeOutHires.php?hireNo=' + hireNo + '&state=' + state);
+    return this.http.get(this.host2 + '/common_deleteTimeOutHires.php?hireNo=' + hireNo + '&state=' + state);
   }
 
   selectRejectedHire(hireNo) {
