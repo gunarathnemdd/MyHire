@@ -15,7 +15,7 @@ import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { BackgroundMode } from '@ionic-native/background-mode';
 import { CallNumber } from '@ionic-native/call-number';
-import { AppVersion } from '@ionic-native/app-version';
+import { AppUpdate } from '@ionic-native/app-update';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -73,7 +73,7 @@ import { AlertControllerProvider } from '../providers/alert-controller/alert-con
     Push,
     BackgroundMode,
     CallNumber,
-    AppVersion,
+    AppUpdate,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     HttpServicesProvider,
     ToastControllerProvider,
