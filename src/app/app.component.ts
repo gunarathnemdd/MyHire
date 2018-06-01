@@ -10,8 +10,6 @@ import 'rxjs/add/operator/filter';
 import moment from 'moment';
 import { Geolocation } from '@ionic-native/geolocation';
 import { BackgroundMode } from '@ionic-native/background-mode';
-import { AppVersion } from '@ionic-native/app-version';
-import compareVersions from "compare-versions";
 
 import { HomePage } from '../pages/home/home';
 import { ActivatePage } from '../pages/activate/activate';
@@ -38,7 +36,6 @@ export class MyApp {
     splashScreen: SplashScreen,
     public app: App,
     public toastCtrl: ToastController,
-    private appVersion: AppVersion,
     private locationAccuracy: LocationAccuracy,
     private geolocation: Geolocation,
     public service: HttpServicesProvider,
@@ -54,6 +51,8 @@ export class MyApp {
       statusBar.styleDefault();
       splashScreen.hide();
 
+      console.log('old version');
+
       this.locationAccuracy.canRequest().then((canRequest: boolean) => {
         if (canRequest) {
           // the accuracy option will be ignored by iOS
@@ -62,22 +61,6 @@ export class MyApp {
             error => console.log('Error requesting location permissions', error)
           );
         }
-      });
-
-      this.service.versionCompare("MyHire").subscribe(data => {
-        let serverVersion = data['versionNo'];
-        this.appVersion.getVersionNumber().then((myAppVersion) => {
-          if (compareVersions(myAppVersion, serverVersion) == -1) {
-            this.storage.set('version', "old");
-          }
-          else {
-            this.storage.set('version', "latest");
-          }
-        },
-          (err) => {
-            let message = "Network error! Please check your internet connection.";
-            this.toastService.toastCtrlr(message);
-          });
       });
 
       let onSuccess = (position) => {

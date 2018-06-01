@@ -99,7 +99,7 @@
     </plugin>
     <plugin name="cordova-plugin-background-mode" spec="^0.7.2" />
     <plugin name="mx.ferreyra.callnumber" spec="~0.0.2" />
+    <plugin name="cordova-plugin-app-update" spec="^1.6.0" />
     <engine name="android" spec="7.0.0" />
     <engine name="ios" spec="4.5.4" />
-    <plugin name="cordova-plugin-app-version" spec="^0.1.9" />
 </widget>

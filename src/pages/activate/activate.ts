@@ -9,6 +9,7 @@ import { orderBy, filter } from 'lodash';
 import moment from 'moment';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { BackgroundMode } from '@ionic-native/background-mode';
+import { AppUpdate } from '@ionic-native/app-update';
 
 import { PayPage } from '../pay/pay';
 import { ViewNewHirePage } from '../view-new-hire/view-new-hire';
@@ -42,7 +43,6 @@ export class ActivatePage {
 	public hireNo: any;
 	public pushTimeOut: any;
 	public isBackgroundMode: any;
-	public version: any;
 
 	constructor(
 		public platform: Platform,
@@ -50,6 +50,7 @@ export class ActivatePage {
 		public navParams: NavParams,
 		public service: HttpServicesProvider,
 		private storage: Storage,
+		private appUpdate: AppUpdate,
 		private nativeAudio: NativeAudio,
 		private vibration: Vibration,
 		private backgroundMode: BackgroundMode,
@@ -71,6 +72,12 @@ export class ActivatePage {
 		this.storage.set('driverAvailabiity', 'no');
 		this.isBackgroundMode = navParams.get('backgroundMode');
 		console.log(this.isBackgroundMode);
+
+		const updateUrl = 'http://www.my3wheel.lk/xml/updateMyHire.xml';
+		this.appUpdate.checkAppUpdate(updateUrl).then(
+		  (res) => { console.log(res) }, 
+		  (err) => { console.log(err) }
+		);
 	}
 
 	ionViewDidLoad() {
@@ -82,7 +89,6 @@ export class ActivatePage {
 					else if (key == "intervalID") { this.intervalId = value; }
 					else if (key == "noOfNewHires") { this.noOfNewHires = value; }
 					else if (key == "isNotified") { this.isNotified = value; }
-					else if (key == "version") { this.version = value; }
 				}).then(() => {
 					clearInterval(this.intervalId);
 					console.log('driverId: ', this.driverIdStorage);
@@ -91,27 +97,11 @@ export class ActivatePage {
 					if (this.isBackgroundMode != 'on') {
 						this.getActiveState();
 					}
-					if (this.version == "old") {
-						this.update();
-					}
 				}),
 			() => {
 				this.fallAsleep();
 			}
 		)
-	}
-
-	update() {
-		let confirmAlert = this.alertCtrl.create({
-			title: "Update!",
-			subTitle: "This app has a new version. Please uninstall this app and visit 'http://www.my3wheel.lk' then install new version.",
-			enableBackdropDismiss: false,
-			buttons: [{
-				text: 'OK',
-				role: 'cancel'
-			}]
-		});
-		confirmAlert.present();
 	}
 
 	fallAsleep() {
