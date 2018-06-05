@@ -125,7 +125,7 @@ export class ViewNewHirePage {
   balanceWarning(hireNo, driverId, hireRate) {
     let alert = this.alertCtrl.create({
       title: 'Insufficient Balance!',
-      subTitle: 'Press OK button to take this hire and your balance get minus balance. To get another hire, you have to recharge your account. Otherwise press No to rejeact this hire.',
+      subTitle: 'Press OK button to take this hire and your balance get minus balance. To get another hire, you have to recharge your account. Otherwise press No to reject this hire.',
       enableBackdropDismiss: false,
       buttons: [
         {
