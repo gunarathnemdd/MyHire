@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ViewController } from 'ionic-angular';
+import { NavController, NavParams, ViewController, ToastController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 
@@ -27,6 +27,7 @@ export class PayPage {
     public navParams: NavParams,
     private storage: Storage,
 		public toastService: ToastControllerProvider,
+    public toastCtrl: ToastController,
     public viewCtrl: ViewController) {
       this.image = 'assets/imgs/logo.jpg';
       this.recharge = new FormGroup({
@@ -69,9 +70,8 @@ export class PayPage {
       this.pin = this.recharge["value"]["pin"];
       this.service.updateDriverBalance(this.driverId, this.pin).subscribe(data => {
         if(data["response"] == "success") {
-          this.navCtrl.setRoot(ActivatePage);
           let message = "Your Payment is Successful. Now You Can Activate.";
-          this.toastService.toastCtrlr(message);
+          this.toaster(message);
         }
         else if(data["response"] == "invalid driverId") {
           let message = "Network Error!";
@@ -100,6 +100,18 @@ export class PayPage {
       let message = "This is a required field. Please only enter numbers.";
       this.toastService.toastCtrlr(message);
     }
+  }
+
+  toaster(message) {
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      dismissOnPageChange: true
+    });
+    toast.onDidDismiss(() => {
+      this.navCtrl.setRoot(ActivatePage);
+    });
+    toast.present();
   }
 
 }
