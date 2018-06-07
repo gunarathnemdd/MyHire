@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ViewController } from 'ionic-angular';
+import { NavController, NavParams, ViewController, ToastController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 
@@ -13,7 +13,7 @@ import { ToastControllerProvider } from '../../providers/toast-controller/toast-
 })
 export class PayPage {
 
-  private recharge : FormGroup;
+  private recharge: FormGroup;
   public creditAmount: number;
   public image: String;
   public hiddenDiv: any;
@@ -26,12 +26,13 @@ export class PayPage {
     public service: HttpServicesProvider,
     public navParams: NavParams,
     private storage: Storage,
-		public toastService: ToastControllerProvider,
+    public toastService: ToastControllerProvider,
+    public toastCtrl: ToastController,
     public viewCtrl: ViewController) {
-      this.image = 'assets/imgs/logo.jpg';
-      this.recharge = new FormGroup({
-        pin: new FormControl('', Validators.compose([Validators.pattern('[0-9]*'), Validators.required]))
-      });
+    this.image = 'assets/imgs/logo.jpg';
+    this.recharge = new FormGroup({
+      pin: new FormControl('', Validators.compose([Validators.pattern('[0-9]*'), Validators.required]))
+    });
   }
 
   ionViewDidLoad() {
@@ -42,17 +43,18 @@ export class PayPage {
       this.driverId = val;
       this.service.getBalance(this.driverId).subscribe(data => {
         console.log(data["balance"]);
-        if(data["balance"] != "error") {
+        if (data["balance"] != "error") {
           this.creditAmount = data["balance"];
         }
         else {
-          this.creditAmount = 0;
+          let message = "Server error! Please try again.";
+          this.toastService.toastCtrlr(message);
         }
       },
-      (err) => {
-        let message = "Network error! Please check your internet connection.";
-        this.toastService.toastCtrlr(message);
-      });
+        (err) => {
+          let message = "Network error! Please check your internet connection.";
+          this.toastService.toastCtrlr(message);
+        });
     });
   }
 
@@ -65,23 +67,22 @@ export class PayPage {
   }
 
   sendPin() {
-    if(this.recharge["valid"]) {
+    if (this.recharge["valid"]) {
       this.pin = this.recharge["value"]["pin"];
       this.service.updateDriverBalance(this.driverId, this.pin).subscribe(data => {
-        if(data["response"] == "success") {
-          this.navCtrl.setRoot(ActivatePage);
+        if (data["response"] == "success") {
           let message = "Your Payment is Successful. Now You Can Activate.";
-          this.toastService.toastCtrlr(message);
+          this.toaster(message);
         }
-        else if(data["response"] == "invalid driverId") {
+        else if (data["response"] == "invalid driverId") {
           let message = "Network Error!";
           this.toastService.toastCtrlr(message);
         }
-        else if(data["response"] == "already used") {
+        else if (data["response"] == "already used") {
           let message = "Recharge Card is Already Used. Please Try Another One.";
           this.toastService.toastCtrlr(message);
         }
-        else if(data["response"] == "not valid") {
+        else if (data["response"] == "not valid") {
           let message = "Recharge Card is not a Valid Card. Please Try Another One and Contact Service Provider.";
           this.toastService.toastCtrlr(message);
         }
@@ -91,15 +92,27 @@ export class PayPage {
         }
         console.log(data["response"]);
       },
-      (err) => {
-        let message = "Network error! Please check your internet connection.";
-        this.toastService.toastCtrlr(message);
-      });
+        (err) => {
+          let message = "Network error! Please check your internet connection.";
+          this.toastService.toastCtrlr(message);
+        });
     }
     else {
       let message = "This is a required field. Please only enter numbers.";
       this.toastService.toastCtrlr(message);
     }
+  }
+
+  toaster(message) {
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      dismissOnPageChange: true
+    });
+    toast.onDidDismiss(() => {
+      this.navCtrl.setRoot(ActivatePage);
+    });
+    toast.present();
   }
 
 }

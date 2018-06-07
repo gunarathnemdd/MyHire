@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ModalController, AlertController, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, ModalController, AlertController, LoadingController, ToastController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { BackgroundMode } from '@ionic-native/background-mode';
@@ -35,7 +35,8 @@ export class ViewNewHirePage {
     private backgroundMode: BackgroundMode,
     public modalCtrl: ModalController,
     public alertCtrl: AlertController,
-		public toastService: ToastControllerProvider) {
+    public toastService: ToastControllerProvider,
+    public toastCtrl: ToastController) {
     this.image = 'assets/imgs/logo.jpg';
   }
 
@@ -125,7 +126,7 @@ export class ViewNewHirePage {
   balanceWarning(hireNo, driverId, hireRate) {
     let alert = this.alertCtrl.create({
       title: 'Insufficient Balance!',
-      subTitle: 'Press OK button to take this hire and your balance get minus balance. To get another hire, you have to recharge your account. Otherwise press No to rejeact this hire.',
+      subTitle: 'Press OK button to take this hire and your balance get minus balance. To get another hire, you have to recharge your account. Otherwise press No to reject this hire.',
       enableBackdropDismiss: false,
       buttons: [
         {
@@ -184,18 +185,16 @@ export class ViewNewHirePage {
       }
       else if (data['response'] == 'already deleted') {
         this.storage.set('noOfNewHires', null);
-        this.navCtrl.setRoot(ActivatePage);
         let message = "Hire is already deleted due to time out.";
-        this.toastService.toastCtrlr(message);
+        this.toaster(message);
       }
       else {
         this.rejectHire(hireNo, driverId, 'reject', 'Network error! Please check your internet connection.');
       }
     },
       (err) => {
-        this.navCtrl.setRoot(ActivatePage);
         let message = "Network error! Please check your internet connection.";
-        this.toastService.toastCtrlr(message);
+        this.toaster(message);
       });
   }
 
@@ -205,19 +204,16 @@ export class ViewNewHirePage {
         console.log(data);
         if (data['response'] == 'deleted') {
           this.storage.set('noOfNewHires', null);
-          this.navCtrl.setRoot(ActivatePage);
-          this.toastService.toastCtrlr(message);
+          this.toaster(message);
         }
         else if (data['response'] == 'already deleted') {
           this.storage.set('noOfNewHires', null);
-          this.navCtrl.setRoot(ActivatePage);
-          let message2 = "Hire is already deeted due to time out.";
-          this.toastService.toastCtrlr(message2);
+          let message2 = "Hire is already deleted due to time out.";
+          this.toaster(message2);
         }
         else {
-          this.navCtrl.setRoot(ActivatePage);
           let message2 = "Network error! Please check your internet connection.";
-          this.toastService.toastCtrlr(message2);
+          this.toaster(message2);
         }
       },
         (err) => {
@@ -260,6 +256,18 @@ export class ViewNewHirePage {
           });
       }, 60000);
     });
+  }
+
+  toaster(message) {
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      dismissOnPageChange: true
+    });
+    toast.onDidDismiss(() => {
+      this.navCtrl.setRoot(ActivatePage);
+    });
+    toast.present();
   }
 
 }
