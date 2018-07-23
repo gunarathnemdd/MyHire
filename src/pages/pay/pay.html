@@ -6,7 +6,7 @@
           <ion-icon (click)="previousPage()" name="ios-arrow-back"></ion-icon>
         </ion-col>
         <ion-col col-8>
-          <ion-label>Pay</ion-label>
+          <ion-label>Recharge</ion-label>
         </ion-col>
         <ion-col col-3>
           <img [src]="image" float-right/>
@@ -25,7 +25,7 @@
       <ion-label >Credit Balance Rs.{{creditAmount}}</ion-label>
     </ion-row>
     <ion-row>
-      <button (click)="pay()" ion-button class="btn" block><span>PAY</span><ion-icon name='ios-arrow-down'></ion-icon></button>
+      <button (click)="pay()" ion-button class="btn" block><span>RECHARGE</span><ion-icon name='ios-arrow-down'></ion-icon></button>
     </ion-row>
     <form class="form" id="hidden" [formGroup]="recharge" (ngSubmit)="sendPin()">
       <ion-row>
