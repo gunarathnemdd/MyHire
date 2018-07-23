@@ -6,7 +6,7 @@
           <ion-icon (click)="previousPage()" name="ios-arrow-back"></ion-icon>
         </ion-col>
         <ion-col col-8>
-          <ion-label>Pay</ion-label>
+          <ion-label>Recharge</ion-label>
         </ion-col>
         <ion-col col-3>
           <img [src]="image" float-right/>
@@ -25,9 +25,9 @@
       <ion-label >Credit Balance Rs.{{creditAmount}}</ion-label>
     </ion-row>
     <ion-row>
-      <button (click)="pay()" ion-button class="btn" block><span>PAY</span><ion-icon name='ios-arrow-down'></ion-icon></button>
+      <button (click)="pay()" ion-button class="btn" block><span>RECHARGE</span><ion-icon name='ios-arrow-down'></ion-icon></button>
     </ion-row>
-    <form class="form" id="hidden" [formGroup]="recharge" (ngSubmit)="sendPin()">
+    <!-- <form class="form" id="hidden" [formGroup]="recharge" (ngSubmit)="sendPin()">
       <ion-row>
         <ion-label class="title2">Enter your pin number below without any white space</ion-label>
       </ion-row>
@@ -42,7 +42,64 @@
       <ion-row>
         <button type="submit" ion-button class="btn" block><span>SEND</span><ion-icon name="send"></ion-icon></button>
       </ion-row>
-    </form>
+      <ion-row>
+        <ion-col col-2>
+          <ion-label class="pinTitle" fixed>eZ Cash</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-input type="number" class="pin" formControlName="ezcash"></ion-input>
+        </ion-col>
+        <ion-col col-2>
+            <button type="submit" ion-button class="btn" block><span>SEND</span><ion-icon name="send"></ion-icon></button>
+          </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-2>
+          <ion-label class="pinTitle" fixed>mCash</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-input type="number" class="pin" formControlName="mcash"></ion-input>
+        </ion-col>
+        <ion-col col-2>
+            <button type="submit" ion-button class="btn" block><span>SEND</span><ion-icon name="send"></ion-icon></button>
+          </ion-col>
+      </ion-row>
+    </form> -->
+    <form class="form" id="hidden" [formGroup]="recharge" (ngSubmit)="sendPin()">
+        <ion-row>
+          <ion-label class="title2">Enter your pin number</ion-label>
+        </ion-row>
+        <ion-row>
+          <ion-col col-8>
+            <ion-input type="number" class="pin" formControlName="pin"></ion-input>
+          </ion-col>
+          <ion-col col-4>
+              <button type="submit" ion-button class="btn" block><span>SEND</span><ion-icon name="send"></ion-icon></button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-label class="title" text-center>OR</ion-label>
+        </ion-row>
+        <ion-row>
+          <ion-col col-4>
+              <ion-label class="title2">eZ Cash : </ion-label>
+          </ion-col>
+          <ion-col col-8>
+              <ion-label class="title2">0777123432</ion-label>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-label class="title" text-center>OR</ion-label>
+        </ion-row>
+        <ion-row>
+          <ion-col col-4>
+              <ion-label class="title2">mCash : </ion-label>
+          </ion-col>
+          <ion-col col-8>
+              <ion-label class="title2">0712123431</ion-label>
+            </ion-col>
+        </ion-row>
+      </form>
   </ion-grid>
 </ion-content>
 

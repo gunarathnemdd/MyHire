@@ -152,7 +152,7 @@ export class ViewNewHirePage {
 
   confirmNo() {
     let alert = this.alertCtrl.create({
-      title: 'Delete',
+      title: 'Reject',
       subTitle: 'Are you sure to cancel this hire?',
       enableBackdropDismiss: false,
       buttons: [
