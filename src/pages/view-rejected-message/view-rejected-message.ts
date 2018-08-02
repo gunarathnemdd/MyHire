@@ -20,7 +20,7 @@ export class ViewRejectedMessagePage {
     public alertCtrl: AlertController,
 		public toastService: ToastControllerProvider,
     public service: HttpServicesProvider) {
-    this.image = 'assets/imgs/logo.jpg';
+    this.image = 'assets/imgs/logo.png';
     this.hireNo = navParams.get('hireNo');
   }
 

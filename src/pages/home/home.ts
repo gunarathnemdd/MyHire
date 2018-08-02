@@ -6,11 +6,8 @@ import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms'
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
-import { ActivatePage } from '../activate/activate';
 import { ForgotPasswordPage } from '../forgot-password/forgot-password';
-import { ViewNewHirePage } from '../view-new-hire/view-new-hire';
-import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
-import { ViewRejectedMessagePage } from '../view-rejected-message/view-rejected-message';
+import { ActivatePage } from '../activate/activate';
 import { HttpServicesProvider } from '../../providers/http-services/http-services';
 import { AlertControllerProvider } from '../../providers/alert-controller/alert-controller';
 
@@ -36,7 +33,7 @@ export class HomePage {
     private push: Push,
     public localNotifications: LocalNotifications,
     public alertService: AlertControllerProvider) {
-    this.image = 'assets/imgs/logo.jpg';
+    this.image = 'assets/imgs/logo.png';
     this.login = new FormGroup({
       driverId: new FormControl('', Validators.compose([Validators.pattern('[a-zA-Z0-9 ]*'), Validators.required]))
     });
