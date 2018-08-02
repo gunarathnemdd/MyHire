@@ -37,7 +37,7 @@ export class ViewNewHirePage {
     public alertCtrl: AlertController,
     public toastService: ToastControllerProvider,
     public toastCtrl: ToastController) {
-    this.image = 'assets/imgs/logo.jpg';
+    this.image = 'assets/imgs/logo.png';
   }
 
   ionViewDidLoad() {

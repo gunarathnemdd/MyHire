@@ -29,7 +29,7 @@ export class PayPage {
     public toastService: ToastControllerProvider,
     public toastCtrl: ToastController,
     public viewCtrl: ViewController) {
-    this.image = 'assets/imgs/logo.jpg';
+    this.image = 'assets/imgs/logo.png';
     this.recharge = new FormGroup({
       pin: new FormControl('', Validators.compose([Validators.pattern('[0-9]*'), Validators.required]))
     });

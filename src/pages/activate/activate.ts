@@ -61,7 +61,7 @@ export class ActivatePage {
 		public modalCtrl: ModalController,
 		public alertCtrl: AlertController,
 		private insomnia: Insomnia) {
-		this.image = 'assets/imgs/logo.jpg';
+		this.image = 'assets/imgs/logo.png';
 		this.activeState = "ACTIVATE";
 		this.actionIcon = "ios-eye";
 		this.isActive = "Deactive";

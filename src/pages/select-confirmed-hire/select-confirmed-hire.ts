@@ -25,7 +25,7 @@ export class SelectConfirmedHirePage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public viewCtrl: ViewController) {
-      this.image = 'assets/imgs/logo.jpg';
+      this.image = 'assets/imgs/logo.png';
       this.name = navParams.get('p_fullName');
       this.mobile = navParams.get('p_tpNumber');
       this.from = navParams.get('p_journeyStart');

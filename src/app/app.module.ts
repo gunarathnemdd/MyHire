@@ -9,7 +9,6 @@ import { IonicStorageModule } from '@ionic/storage';
 import { NativeAudio } from '@ionic-native/native-audio';
 import { Vibration } from '@ionic-native/vibration';
 import { LocalNotifications } from '@ionic-native/local-notifications';
-import { SMS } from '@ionic-native/sms';
 import { Insomnia } from '@ionic-native/insomnia';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
@@ -19,9 +18,9 @@ import { AppUpdate } from '@ionic-native/app-update';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
+import { ForgotPasswordPage } from '../pages/forgot-password/forgot-password';
 import { ActivatePage } from '../pages/activate/activate';
 import { PayPage } from '../pages/pay/pay';
-import { ForgotPasswordPage } from '../pages/forgot-password/forgot-password';
 import { ViewNewHirePage } from '../pages/view-new-hire/view-new-hire';
 import { SelectConfirmedHirePage } from '../pages/select-confirmed-hire/select-confirmed-hire';
 import { ViewConfirmedHiresPage } from '../pages/view-confirmed-hires/view-confirmed-hires';
@@ -34,9 +33,9 @@ import { AlertControllerProvider } from '../providers/alert-controller/alert-con
   declarations: [
     MyApp,
     HomePage,
+    ForgotPasswordPage,
     ActivatePage,
     PayPage,
-    ForgotPasswordPage,
     ViewNewHirePage,
     SelectConfirmedHirePage,
     ViewConfirmedHiresPage,
@@ -52,9 +51,9 @@ import { AlertControllerProvider } from '../providers/alert-controller/alert-con
   entryComponents: [
     MyApp,
     HomePage,
+    ForgotPasswordPage,
     ActivatePage,
     PayPage,
-    ForgotPasswordPage,
     ViewNewHirePage,
     SelectConfirmedHirePage,
     ViewConfirmedHiresPage,
@@ -67,7 +66,6 @@ import { AlertControllerProvider } from '../providers/alert-controller/alert-con
     NativeAudio,
     Vibration,
     LocalNotifications,
-    SMS,
     Insomnia,
     LocationAccuracy,
     Push,

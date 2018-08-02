@@ -26,7 +26,7 @@ export class ViewConfirmedHiresPage {
     public service: HttpServicesProvider,
 		public toastService: ToastControllerProvider,
     public modalCtrl: ModalController) {
-    this.image = 'assets/imgs/logo.jpg';
+    this.image = 'assets/imgs/logo.png';
   }
 
   ionViewDidLoad() {
