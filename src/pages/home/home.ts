@@ -22,7 +22,6 @@ export class HomePage {
   public driverIdStorage: string;
   public tempID: string;
   public image: String;
-  public errmsg = '';
 
   constructor(
     public platform: Platform,

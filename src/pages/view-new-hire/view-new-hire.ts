@@ -5,7 +5,6 @@ import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms'
 import { BackgroundMode } from '@ionic-native/background-mode';
 
 import { ActivatePage } from '../activate/activate';
-import { ViewConfirmedHiresPage } from '../view-confirmed-hires/view-confirmed-hires';
 import { HttpServicesProvider } from '../../providers/http-services/http-services';
 import { ToastControllerProvider } from '../../providers/toast-controller/toast-controller';
 
