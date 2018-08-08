@@ -253,7 +253,7 @@ export class ViewNewHirePage {
             let message = "Network error! Please check your internet connection.";
             this.toastService.toastCtrlr(message);
           });
-      }, 60000);
+      }, 180000);
     });
   }
 
