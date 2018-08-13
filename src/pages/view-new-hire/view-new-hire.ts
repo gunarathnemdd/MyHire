@@ -23,6 +23,7 @@ export class ViewNewHirePage {
   public hireNo: any;
   public hireRate: any;
   public pushTimeOut: any;
+  public pushTimeOut2: any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -173,6 +174,7 @@ export class ViewNewHirePage {
   confirmHire(hireNo, driverId, hireRate) {
     this.service.confirmHire(hireNo, driverId, hireRate).subscribe(data => {
       console.log(data);
+      this.storage.set('haveActiveHire', true);
       this.storage.set('noOfNewHires', null);
       if (data["response"] == "confirmed") {
         let message = "Please wait for the passenger's response";
@@ -237,6 +239,7 @@ export class ViewNewHirePage {
     this.backgroundMode.enable();
     this.backgroundMode.moveToBackground();
     this.backgroundMode.on("activate").subscribe(() => {
+      this.disableBackgroundService(900000);
       this.pushTimeOut = setTimeout(() => {
         this.service.deleteTimeOutHires(this.hireNo, 'passenger').subscribe(data => {
           console.log(data);
@@ -255,6 +258,13 @@ export class ViewNewHirePage {
           });
       }, 180000);
     });
+  }
+
+  disableBackgroundService(time) {
+    this.pushTimeOut2 = setTimeout(() => {
+      clearTimeout(this.pushTimeOut2);
+      this.backgroundMode.disable();
+    }, time);
   }
 
   toaster(message) {

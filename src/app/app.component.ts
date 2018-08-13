@@ -29,6 +29,7 @@ export class MyApp {
   public lastBack: any = Date.now();
   public allowClose: boolean = false;
   public translate: any;
+  public haveActiveHire: boolean;
 
   constructor(
     public platform: Platform,
@@ -122,6 +123,8 @@ export class MyApp {
         const closeDelay = 2000;
         const spamDelay = 500;
         if ((activeView.name === "ActivatePage") || (activeView.name === "HomePage")) {
+          this.storage.get('haveActiveHire').then((val) => {
+            this.haveActiveHire = val;
           if (overlay && overlay.dismiss) {
             overlay.dismiss();
           } else if (nav.canGoBack()) {
@@ -137,12 +140,14 @@ export class MyApp {
               this.allowClose = false;
             });
             toast.present();
-          } else if (Date.now() - this.lastBack < closeDelay && this.allowClose) {
-            //platform.exitApp();
+          } else if (Date.now() - this.lastBack < closeDelay && this.allowClose && this.haveActiveHire) {
             this.backgroundMode.enable();
             this.backgroundMode.moveToBackground();
+          } else if (Date.now() - this.lastBack < closeDelay && this.allowClose) {
+            platform.exitApp();
           }
           this.lastBack = Date.now();
+        });
         }
       });
     });
