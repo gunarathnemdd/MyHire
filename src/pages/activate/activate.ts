@@ -42,6 +42,7 @@ export class ActivatePage {
 	public data: any;
 	public hireNo: any;
 	public pushTimeOut: any;
+	public pushTimeOut2: any;
 	public isBackgroundMode: any;
 
 	constructor(
@@ -75,8 +76,8 @@ export class ActivatePage {
 
 		const updateUrl = 'http://www.my3wheel.lk/xml/updateMyHire.xml';
 		this.appUpdate.checkAppUpdate(updateUrl).then(
-		  (res) => { console.log(res) }, 
-		  (err) => { console.log(err) }
+			(res) => { console.log(res) },
+			(err) => { console.log(err) }
 		);
 	}
 
@@ -436,11 +437,13 @@ export class ActivatePage {
 				}
 				else if (data.title == "Hire Confirmed") {
 					this.backgroundMode.moveToForeground();
+					this.storage.set('haveActiveHire', false);
 					this.navCtrl.push(ViewConfirmedHiresPage);
 					this.sendDriverDetailsToPassenger(this.hireNo);
 				}
 				else if (data.title == "Hire Rejected") {
 					this.backgroundMode.moveToForeground();
+					this.storage.set('haveActiveHire', false);
 					this.navCtrl.push(ViewRejectedMessagePage, {
 						hireNo: this.hireNo
 					});
@@ -453,6 +456,10 @@ export class ActivatePage {
 	}
 
 	sendDriverDetailsToPassenger(hireNo) {
+		this.pushTimeOut2 = setTimeout(() => {
+			clearTimeout(this.pushTimeOut2);
+			this.backgroundMode.disable();
+		}, 3000);
 		this.service.sendPassengerRemind(hireNo).subscribe(data => {
 			console.log(data);
 			let message = "You have a hire. Please be on time.";
