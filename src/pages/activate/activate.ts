@@ -44,6 +44,7 @@ export class ActivatePage {
 	public pushTimeOut: any;
 	public pushTimeOut2: any;
 	public isBackgroundMode: any;
+	public interval: any;
 
 	constructor(
 		public platform: Platform,
@@ -403,6 +404,19 @@ export class ActivatePage {
 			console.log('this.hireNo -> ', this.hireNo);
 			//if user using app and push notification comes
 			if (data.additionalData.foreground) {
+				if (data.title == "New Hire") {
+					let i = 0;
+					this.nativeAudio.play('newHire');
+					this.interval = setInterval(() => {
+						if (i < 18) {
+							this.nativeAudio.play('newHire');
+							i++;
+						}
+						else {
+							clearInterval(this.interval);
+						}
+					}, 10000);
+				}
 				// if application open, show popup
 				let confirmAlert = this.alertCtrl.create({
 					title: data.title,
@@ -413,6 +427,8 @@ export class ActivatePage {
 						handler: () => {
 							//TODO: Your logic here
 							if (data.title == "New Hire") {
+								clearInterval(this.interval);
+								this.nativeAudio.stop('newHire');
 								this.navCtrl.push(ViewNewHirePage);
 							}
 							else if (data.title == "Hire Confirmed") {

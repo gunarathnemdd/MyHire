@@ -125,29 +125,29 @@ export class MyApp {
         if ((activeView.name === "ActivatePage") || (activeView.name === "HomePage")) {
           this.storage.get('haveActiveHire').then((val) => {
             this.haveActiveHire = val;
-          if (overlay && overlay.dismiss) {
-            overlay.dismiss();
-          } else if (nav.canGoBack()) {
-            nav.pop();
-          } else if (Date.now() - this.lastBack > spamDelay && !this.allowClose) {
-            this.allowClose = true;
-            let toast = this.toastCtrl.create({
-              message: "Press BACK again to exit",
-              duration: closeDelay,
-              dismissOnPageChange: true
-            });
-            toast.onDidDismiss(() => {
-              this.allowClose = false;
-            });
-            toast.present();
-          } else if (Date.now() - this.lastBack < closeDelay && this.allowClose && this.haveActiveHire) {
-            this.backgroundMode.enable();
-            this.backgroundMode.moveToBackground();
-          } else if (Date.now() - this.lastBack < closeDelay && this.allowClose) {
-            platform.exitApp();
-          }
-          this.lastBack = Date.now();
-        });
+            if (overlay && overlay.dismiss) {
+              overlay.dismiss();
+            } else if (nav.canGoBack()) {
+              nav.pop();
+            } else if (Date.now() - this.lastBack > spamDelay && !this.allowClose) {
+              this.allowClose = true;
+              let toast = this.toastCtrl.create({
+                message: "Press BACK again to exit",
+                duration: closeDelay,
+                dismissOnPageChange: true
+              });
+              toast.onDidDismiss(() => {
+                this.allowClose = false;
+              });
+              toast.present();
+            } else if (Date.now() - this.lastBack < closeDelay && this.allowClose && this.haveActiveHire) {
+              this.backgroundMode.enable();
+              this.backgroundMode.moveToBackground();
+            } else if (Date.now() - this.lastBack < closeDelay && this.allowClose) {
+              platform.exitApp();
+            }
+            this.lastBack = Date.now();
+          });
         }
       });
     });
